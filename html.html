@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ShqipGo — Learn Albanian</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --orange:#FF9600;--yellow:#FFD600;--green:#3DAA47;--blue:#1FAEE8;
+  --purple:#9B59D0;--pink:#E91E8C;--teal:#00BFA5;
+  --card:#fff;--border:#E5E5E5;--surface:#F5F5F5;
+  --text:#2C2C2C;--muted:#888;--correct:#3DAA47;--wrong:#E91E8C;
+}
+body{font-family:'Nunito',sans-serif;background:var(--surface);color:var(--text);min-height:100vh;overflow-x:hidden}
+#app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--card);display:flex;flex-direction:column;position:relative}
+#top-nav{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:2px solid var(--border);background:var(--card);position:sticky;top:0;z-index:30}
+#nav-logo{font-size:21px;font-weight:900;color:var(--green)}
+#nav-logo span{color:var(--blue)}
+.nav-pills{display:flex;gap:8px;align-items:center}
+.nav-pill{display:flex;align-items:center;gap:4px;font-weight:800;font-size:13px;padding:5px 9px;border-radius:99px;background:var(--surface)}
+.np-streak{color:var(--orange)}.np-xp{color:var(--blue)}.np-hearts{color:var(--wrong)}
+#bottom-nav{display:flex;border-top:2px solid var(--border);background:var(--card);position:sticky;bottom:0;z-index:30}
+.nav-btn{flex:1;padding:10px 0 8px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Nunito',sans-serif;font-size:10px;font-weight:700;color:var(--muted);transition:color .15s}
+.nav-btn.active{color:var(--green)}
+.nav-btn .icon{font-size:21px}
+.screen{display:none;flex:1;flex-direction:column;overflow-y:auto}
+.screen.active{display:flex}
+
+/* ONBOARDING */
+#onboard-screen{background:var(--card)}
+.ob-slide{display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;gap:16px;text-align:center}
+.ob-slide.active{display:flex}
+.ob-emoji{font-size:70px;animation:bounceIn .5s ease}
+.ob-title{font-size:25px;font-weight:900}
+.ob-sub{font-size:14px;color:var(--muted);font-weight:600;line-height:1.5;max-width:300px}
+.ob-options{display:flex;flex-direction:column;gap:10px;width:100%}
+.ob-opt{background:var(--surface);border:2.5px solid var(--border);border-radius:14px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:12px}
+.ob-opt:hover,.ob-opt.selected{border-color:var(--blue);background:#E3F6FD}
+.ob-btn{width:100%;padding:15px;background:var(--green);color:white;border:none;border-radius:14px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #217a28;text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+.ob-btn:disabled{background:var(--border);color:var(--muted);box-shadow:0 4px 0 #bbb;cursor:not-allowed}
+.ob-dots{display:flex;gap:8px;margin-top:4px}
+.ob-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background .3s}
+.ob-dot.active{background:var(--green)}
+
+/* HOME */
+#home-screen{padding:16px;gap:14px}
+.progress-banner{background:linear-gradient(135deg,#3DAA47,#1FAEE8);border-radius:18px;padding:18px 20px;color:white;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.progress-flag{font-size:44px}
+.progress-info{flex:1}
+.progress-info h2{font-size:15px;font-weight:900;margin-bottom:3px}
+.progress-info p{font-size:12px;opacity:.9;font-weight:600}
+.progress-bar-bg{background:rgba(255,255,255,.3);border-radius:99px;height:8px;margin-top:8px}
+.progress-bar-fill{background:white;border-radius:99px;height:8px;transition:width .6s}
+.daily-goal-card{background:var(--surface);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:14px}
+.goal-ring{width:54px;height:54px;flex-shrink:0;position:relative}
+.goal-ring svg{transform:rotate(-90deg)}
+.grb{fill:none;stroke:var(--border);stroke-width:5}
+.grf{fill:none;stroke:var(--orange);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .6s}
+.goal-ring-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--orange)}
+.goal-info{flex:1}
+.goal-title{font-size:13px;font-weight:800}
+.goal-sub{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+.unit-block{display:flex;flex-direction:column;gap:8px}
+.unit-hdr{border-radius:12px;padding:11px 16px;color:white;font-weight:800;font-size:14px}
+.unit-hdr.locked{background:#C8C8C8!important;color:#888!important}
+.sec-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.lesson-path{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 0 8px}
+.lesson-node{width:66px;height:66px;border-radius:50%;border:none;cursor:pointer;font-size:24px;font-family:'Nunito',sans-serif;transition:transform .1s,box-shadow .1s;box-shadow:0 4px 0 rgba(0,0,0,.15);position:relative}
+.lesson-node:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.lesson-node.done{background:var(--green)}
+.lesson-node.current{background:var(--yellow);animation:pulse 2s infinite}
+.lesson-node.locked{background:var(--border);color:var(--muted);cursor:not-allowed;box-shadow:0 4px 0 #ccc}
+.lesson-node-lbl{font-size:10px;font-weight:700;color:var(--muted);text-align:center;max-width:78px}
+.path-line{width:3px;height:13px;background:var(--border);border-radius:2px}
+@keyframes pulse{0%,100%{box-shadow:0 4px 0 rgba(0,0,0,.15),0 0 0 0 rgba(255,214,0,.6)}50%{box-shadow:0 4px 0 rgba(0,0,0,.15),0 0 0 10px rgba(255,214,0,0)}}
+.tip-card{border-radius:13px;padding:12px 14px;display:flex;gap:10px;margin-top:2px}
+.tip-icon{font-size:19px;flex-shrink:0}
+.tip-title{font-size:12px;font-weight:900;margin-bottom:2px}
+.tip-body{font-size:11px;font-weight:600;line-height:1.5;color:var(--muted)}
+
+/* LESSON */
+#lesson-screen{position:relative;display:none;flex-direction:column}
+#lesson-screen.active{display:flex}
+#lp-bar{height:8px;background:var(--border);flex-shrink:0}
+#lp-fill{height:100%;background:var(--green);border-radius:0 4px 4px 0;transition:width .4s}
+#lesson-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;flex-shrink:0}
+#lesson-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);padding:0;line-height:1}
+#lesson-unit-lbl{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;text-align:center}
+#lesson-hearts{font-size:13px;font-weight:800;color:var(--wrong)}
+#lesson-content{flex:1;padding:6px 18px 12px;display:flex;flex-direction:column;gap:11px;overflow-y:auto}
+#lesson-type-lbl{font-size:18px;font-weight:900}
+#lesson-prompt{font-size:14px;color:var(--muted);font-weight:600;line-height:1.4}
+#retry-banner{background:#FFF8E1;border:2px solid var(--yellow);border-radius:11px;padding:9px 13px;font-size:12px;font-weight:700;color:#8B6914;display:none;align-items:center;gap:8px}
+.flashcard{background:var(--card);border:3px solid var(--border);border-radius:20px;padding:24px 18px;text-align:center;cursor:pointer;min-height:145px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;transition:border-color .2s;user-select:none}
+.fc-emoji{font-size:44px}.fc-word{font-size:24px;font-weight:900}.fc-ph{font-size:12px;color:var(--muted);font-weight:600}
+.fc-trans{font-size:18px;font-weight:700;color:var(--green);display:none;margin-top:3px}
+.fc-hint{font-size:11px;color:var(--muted)}
+.fc-example{font-size:12px;color:var(--blue);font-weight:600;display:none;margin-top:4px;font-style:italic}
+
+/* sentence card */
+.sentence-card{background:linear-gradient(135deg,#E8F5E9,#E3F2FD);border:2.5px solid #B2DFDB;border-radius:18px;padding:22px 18px;display:flex;flex-direction:column;gap:10px}
+.sc-al{font-size:20px;font-weight:900;color:var(--text);line-height:1.3}
+.sc-en{font-size:14px;color:var(--muted);font-weight:600}
+.sc-breakdown{display:flex;flex-direction:column;gap:5px;display:none}
+.sc-breakdown-row{display:flex;gap:8px;align-items:baseline}
+.sc-word{font-size:13px;font-weight:800;color:var(--blue)}
+.sc-meaning{font-size:12px;color:var(--muted);font-weight:600}
+.sc-toggle{background:none;border:none;font-size:12px;font-weight:800;color:var(--blue);cursor:pointer;font-family:'Nunito',sans-serif;text-align:left;padding:0}
+
+.mcq-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mcq-opt{background:var(--card);border:2.5px solid var(--border);border-radius:13px;padding:12px 9px;text-align:center;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);min-height:58px;display:flex;align-items:center;justify-content:center;transition:all .12s;line-height:1.3}
+.mcq-opt:hover:not([disabled]){border-color:var(--blue);background:#E3F6FD}
+.mcq-opt.selected{border-color:var(--blue);background:#E3F6FD}
+.mcq-opt.correct{border-color:var(--correct);background:#EAF6EA;color:var(--correct)}
+.mcq-opt.wrong{border-color:var(--wrong);background:#FDE6F1;color:var(--wrong)}
+#typing-input{width:100%;border:2.5px solid var(--border);border-radius:13px;padding:13px 15px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;color:var(--text);outline:none;transition:border-color .2s;background:var(--card)}
+#typing-input:focus{border-color:var(--blue)}
+#typing-input.correct{border-color:var(--correct);background:#EAF6EA}
+#typing-input.wrong{border-color:var(--wrong);background:#FDE6F1}
+.type-note{font-size:11px;color:var(--muted);font-weight:600;font-style:italic}
+
+/* arrange exercise */
+.arrange-wrap{display:flex;flex-direction:column;gap:10px}
+.arrange-target{min-height:52px;border:2.5px dashed var(--border);border-radius:13px;padding:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--surface);transition:border-color .2s}
+.arrange-target.has-words{border-color:var(--blue)}
+.arrange-chips{display:flex;flex-wrap:wrap;gap:6px}
+.word-chip{background:var(--card);border:2px solid var(--border);border-radius:99px;padding:7px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .12s;user-select:none}
+.word-chip:hover{border-color:var(--blue);background:#E3F6FD}
+.word-chip.placed{background:var(--blue);color:white;border-color:var(--blue)}
+.word-chip.correct-placed{background:var(--correct);color:white;border-color:var(--correct)}
+.word-chip.wrong-placed{background:var(--wrong);color:white;border-color:var(--wrong)}
+
+/* listen */
+#listen-area{display:flex;flex-direction:column;align-items:center;gap:12px}
+#listen-btn{background:var(--blue);border:none;border-radius:50%;width:84px;height:84px;font-size:30px;cursor:pointer;color:white;box-shadow:0 4px 0 #1080b0;display:flex;align-items:center;justify-content:center;transition:transform .1s;position:relative;overflow:hidden}
+#listen-btn:active{transform:scale(.94)}
+#listen-btn.playing{background:var(--green);box-shadow:0 4px 0 #217a28}
+#listen-btn.loading{background:var(--purple);box-shadow:0 4px 0 #6a2fa0;cursor:wait}
+.listen-ripple{position:absolute;width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.22);animation:ripple 1.2s infinite;display:none}
+#listen-btn.playing .listen-ripple{display:block}
+@keyframes ripple{0%{transform:scale(.7);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.listen-meta{display:flex;flex-direction:column;align-items:center;gap:5px}
+.ai-badge{background:linear-gradient(135deg,var(--purple),var(--blue));color:white;font-size:10px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.5px}
+.cant-listen-btn{background:none;border:none;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;text-decoration:underline;padding:2px 0}
+.revealed-word{background:var(--surface);border:2px solid var(--border);border-radius:11px;padding:11px 18px;text-align:center;display:none}
+.revealed-al{font-size:20px;font-weight:900}
+.revealed-ph{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+
+#feedback-bar{padding:12px 18px;display:none;gap:10px;align-items:center;border-top:2px solid transparent;flex-shrink:0}
+#feedback-bar.correct{background:#EAF6EA;border-color:var(--correct)}
+#feedback-bar.wrong{background:#FDE6F1;border-color:var(--wrong)}
+#fb-icon{font-size:24px}
+#fb-title{font-size:15px;font-weight:900}
+#fb-title.correct{color:var(--correct)}
+#fb-title.wrong{color:var(--wrong)}
+#fb-ans{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px}
+#action-btn{margin:0 18px 12px;padding:14px;border:none;border-radius:13px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:transform .1s,box-shadow .1s;flex-shrink:0}
+#action-btn.check{background:var(--green);color:white;box-shadow:0 4px 0 #217a28}
+#action-btn.check:disabled{background:var(--border);color:var(--muted);box-shadow:0 4px 0 #bbb;cursor:not-allowed}
+#action-btn.check:not(:disabled):active{transform:translateY(2px);box-shadow:0 2px 0 #217a28}
+#action-btn.next{background:var(--blue);color:white;box-shadow:0 4px 0 #1080b0}
+#action-btn.next:active{transform:translateY(2px);box-shadow:0 2px 0 #1080b0}
+
+/* BONUS */
+#bonus-screen{display:none;flex-direction:column;align-items:center;padding:22px 18px;gap:14px}
+#bonus-screen.active{display:flex}
+.bonus-title{font-size:22px;font-weight:900;text-align:center}
+.bonus-sub{font-size:13px;color:var(--muted);font-weight:600;text-align:center}
+#bonus-timer-bar{width:100%;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+#bonus-timer-fill{height:100%;background:var(--orange);border-radius:99px;transition:width .1s linear}
+#bonus-score{font-size:15px;font-weight:800}
+#bonus-word{font-size:28px;font-weight:900;text-align:center;padding:22px;background:var(--surface);border-radius:16px;width:100%;min-height:85px;display:flex;align-items:center;justify-content:center}
+#bonus-options{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%}
+.bonus-opt{background:var(--card);border:2.5px solid var(--border);border-radius:13px;padding:13px 9px;text-align:center;cursor:pointer;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;color:var(--text);transition:all .12s}
+.bonus-opt:hover{border-color:var(--blue);background:#E3F6FD}
+.bonus-opt.correct{border-color:var(--correct);background:#EAF6EA;color:var(--correct)}
+.bonus-opt.wrong{border-color:var(--wrong);background:#FDE6F1;color:var(--wrong)}
+
+/* WIN */
+#win-screen{display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px 22px;gap:12px;text-align:center}
+#win-screen.active{display:flex}
+.win-trophy{font-size:64px;animation:bounceIn .5s ease}
+.win-title{font-size:24px;font-weight:900}
+.win-sub{font-size:14px;color:var(--muted);font-weight:600}
+.win-stats{display:flex;gap:14px;margin:5px 0;flex-wrap:wrap;justify-content:center}
+.win-stat{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:65px}
+.win-stat-val{font-size:22px;font-weight:900}
+.win-stat-lbl{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.win-btn{width:100%;padding:14px;background:var(--green);color:white;border:none;border-radius:13px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;cursor:pointer;text-transform:uppercase;box-shadow:0 4px 0 #217a28;margin-top:3px}
+@keyframes bounceIn{0%{transform:scale(.2);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
+/* VOCAB */
+#vocab-screen{padding:14px;gap:9px}
+.vocab-search{width:100%;border:2px solid var(--border);border-radius:11px;padding:10px 13px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);outline:none;background:var(--surface)}
+.vocab-search:focus{border-color:var(--blue)}
+.vocab-unit-lbl{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 0 2px}
+.vocab-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .15s}
+.vocab-card:hover{border-color:var(--blue)}
+.vocab-card.srs-due{border-color:var(--orange)!important}
+.vocab-emoji{font-size:26px;width:35px;text-align:center;flex-shrink:0}
+.vocab-al{font-size:15px;font-weight:800}
+.vocab-en{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+.vocab-ph{font-size:10px;color:var(--blue);font-weight:600;margin-top:1px}
+.vocab-srs{font-size:9px;font-weight:800;padding:2px 6px;border-radius:99px;margin-left:auto;flex-shrink:0}
+.srs-new{background:#E3F6FD;color:var(--blue)}
+.srs-learning{background:#FFF8E1;color:var(--orange)}
+.srs-review{background:#EAF6EA;color:var(--correct)}
+.srs-due{background:#FDE6F1;color:var(--wrong)}
+
+/* PROFILE */
+#profile-screen{padding:14px;gap:12px}
+.profile-banner{background:linear-gradient(135deg,#9B59D0,#1FAEE8);border-radius:18px;padding:18px;color:white;display:flex;align-items:center;gap:13px}
+.profile-avatar{width:62px;height:62px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0}
+.profile-name{font-size:18px;font-weight:900}
+.profile-lvl{font-size:12px;opacity:.9;font-weight:600;margin-top:2px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.stat-card{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.stat-val{font-size:22px;font-weight:900}
+.stat-lbl{font-size:10px;color:var(--muted);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+.ach-item{display:flex;align-items:center;gap:11px;background:var(--card);border:2px solid var(--border);border-radius:12px;padding:11px 13px}
+.ach-icon{font-size:24px;flex-shrink:0}
+.ach-name{font-size:13px;font-weight:800}
+.ach-desc{font-size:11px;color:var(--muted);font-weight:600;margin-top:1px}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:22px 22px 0 0;padding:22px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:12px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-size:19px;font-weight:900;text-align:center}
+.modal-body{font-size:13px;color:var(--muted);font-weight:600;line-height:1.6;text-align:center}
+.modal-btn{width:100%;padding:13px;border:none;border-radius:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;cursor:pointer;text-transform:uppercase}
+.modal-btn.primary{background:var(--green);color:white;box-shadow:0 4px 0 #217a28}
+.modal-btn.secondary{background:var(--surface);color:var(--text);border:2px solid var(--border)}
+
+.cf{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;animation:cf-fall 2.4s ease-out forwards}
+@keyframes cf-fall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(700px) rotate(740deg);opacity:0}}
+#toast{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);background:#2C2C2C;color:white;padding:9px 18px;border-radius:99px;font-size:12px;font-weight:700;z-index:200;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div id="top-nav">
+  <div id="nav-logo">Shqip<span>Go</span></div>
+  <div class="nav-pills">
+    <div class="nav-pill np-streak">🔥<span id="streak-val">0</span></div>
+    <div class="nav-pill np-xp">💎<span id="xp-val">0</span></div>
+    <div class="nav-pill np-hearts">❤️<span id="global-hearts">5</span></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="onboard-screen" class="screen active">
+  <div class="ob-slide active" id="ob1">
+    <div class="ob-emoji">🇦🇱</div>
+    <div class="ob-title">Welcome to ShqipGo!</div>
+    <div class="ob-sub">The most complete Albanian learning app. From first words to full fluency — we'll get you there.</div>
+    <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+    <button class="ob-btn" onclick="obNext(1)">Get Started →</button>
+  </div>
+  <div class="ob-slide" id="ob2">
+    <div class="ob-emoji">🎯</div>
+    <div class="ob-title">What's your goal?</div>
+    <div class="ob-options">
+      <button class="ob-opt" onclick="selectOb(this,'goal','travel')">✈️ Travel to Albania</button>
+      <button class="ob-opt" onclick="selectOb(this,'goal','heritage')">🏡 Connect with heritage</button>
+      <button class="ob-opt" onclick="selectOb(this,'goal','curiosity')">🧠 Just curious</button>
+      <button class="ob-opt" onclick="selectOb(this,'goal','fluent')">🎓 Become fully fluent</button>
+    </div>
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+    <button class="ob-btn" id="ob2-btn" onclick="obNext(2)" disabled>Continue →</button>
+  </div>
+  <div class="ob-slide" id="ob3">
+    <div class="ob-emoji">⏱️</div>
+    <div class="ob-title">Daily study goal?</div>
+    <div class="ob-options">
+      <button class="ob-opt" onclick="selectOb(this,'time','5')">⚡ 5 min — Casual</button>
+      <button class="ob-opt" onclick="selectOb(this,'time','10')">🔥 10 min — Regular</button>
+      <button class="ob-opt" onclick="selectOb(this,'time','15')">💪 15 min — Serious</button>
+      <button class="ob-opt" onclick="selectOb(this,'time','20')">🏆 20 min — Intense</button>
+    </div>
+    <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
+    <button class="ob-btn" id="ob3-btn" onclick="finishOnboard()" disabled>Start Learning! 🚀</button>
+  </div>
+</div>
+
+<!-- HOME -->
+<div id="home-screen" class="screen">
+  <div class="progress-banner">
+    <div class="progress-flag">🇦🇱</div>
+    <div class="progress-info">
+      <h2 id="banner-title">Albanian — Beginner to Fluent</h2>
+      <p id="banner-sub">10 Units · 50 Lessons · 300+ Words</p>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="banner-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="daily-goal-card">
+    <div class="goal-ring">
+      <svg viewBox="0 0 54 54" width="54" height="54">
+        <circle class="grb" cx="27" cy="27" r="22"/>
+        <circle class="grf" id="goal-ring-fill" cx="27" cy="27" r="22" stroke-dasharray="138.2" stroke-dashoffset="138.2"/>
+      </svg>
+      <div class="goal-ring-txt" id="goal-pct">0%</div>
+    </div>
+    <div class="goal-info">
+      <div class="goal-title">Daily Goal</div>
+      <div class="goal-sub" id="goal-sub">Complete a lesson today</div>
+    </div>
+  </div>
+  <div id="units-wrap"></div>
+</div>
+
+<!-- LESSON -->
+<div id="lesson-screen" class="screen">
+  <div id="lp-bar"><div id="lp-fill" style="width:0%"></div></div>
+  <div id="lesson-topbar">
+    <button id="lesson-close" onclick="confirmClose()">✕</button>
+    <div id="lesson-unit-lbl"></div>
+    <div id="lesson-hearts">❤️<span id="heart-val">3</span></div>
+  </div>
+  <div id="lesson-content">
+    <div id="lesson-type-lbl"></div>
+    <div id="lesson-prompt"></div>
+    <div id="retry-banner">🔁 <span id="retry-text">words to retry</span></div>
+    <div id="lesson-ex"></div>
+  </div>
+  <div id="feedback-bar">
+    <div id="fb-icon"></div>
+    <div><div id="fb-title"></div><div id="fb-ans"></div></div>
+  </div>
+  <button id="action-btn" class="check" onclick="handleAction()">Check</button>
+</div>
+
+<!-- BONUS -->
+<div id="bonus-screen" class="screen">
+  <div class="bonus-title">⚡ Speed Round!</div>
+  <div class="bonus-sub">Tap the correct translation as fast as you can</div>
+  <div id="bonus-timer-bar"><div id="bonus-timer-fill" style="width:100%"></div></div>
+  <div id="bonus-score">Score: <span id="bonus-score-val">0</span></div>
+  <div id="bonus-word">—</div>
+  <div id="bonus-options"></div>
+</div>
+
+<!-- WIN -->
+<div id="win-screen" class="screen">
+  <div class="win-trophy">🏆</div>
+  <div class="win-title" id="win-title">Lesson Complete!</div>
+  <div class="win-sub" id="win-sub">Shumë mirë!</div>
+  <div class="win-stats">
+    <div class="win-stat"><div class="win-stat-val" style="color:var(--orange)">🔥+1</div><div class="win-stat-lbl">Streak</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="win-xp" style="color:var(--blue)">+12</div><div class="win-stat-lbl">XP</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="win-acc" style="color:var(--green)">100%</div><div class="win-stat-lbl">Accuracy</div></div>
+    <div class="win-stat"><div class="win-stat-val" id="win-streak" style="color:var(--orange)">1</div><div class="win-stat-lbl">Day Streak</div></div>
+  </div>
+  <button class="win-btn" style="background:var(--orange);box-shadow:0 4px 0 #c07000" id="win-bonus-btn" onclick="startBonusRound()">⚡ Speed Round!</button>
+  <button class="win-btn" onclick="finishLesson()">Continue →</button>
+</div>
+
+<!-- VOCAB -->
+<div id="vocab-screen" class="screen"></div>
+
+<!-- PROFILE -->
+<div id="profile-screen" class="screen">
+  <div class="profile-banner">
+    <div class="profile-avatar">🦅</div>
+    <div>
+      <div class="profile-name">Language Learner</div>
+      <div class="profile-lvl" id="profile-lvl">⭐ Level 1 · Albanian Beginner</div>
+    </div>
+  </div>
+  <div class="sec-lbl" style="padding:3px 0 2px">Your Stats</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val" id="p-xp">0</div><div class="stat-lbl">Total XP</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-streak">0</div><div class="stat-lbl">Day Streak</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-words">0</div><div class="stat-lbl">Words Learned</div></div>
+    <div class="stat-card"><div class="stat-val" id="p-lessons">0</div><div class="stat-lbl">Lessons Done</div></div>
+  </div>
+  <div class="sec-lbl" style="padding:3px 0 2px">Achievements</div>
+  <div id="achievements-list" style="display:flex;flex-direction:column;gap:9px"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div id="bottom-nav" style="display:none">
+  <button class="nav-btn" onclick="showScreen('home-screen',this)"><span class="icon">🏠</span>Learn</button>
+  <button class="nav-btn" onclick="showScreen('vocab-screen',this)"><span class="icon">📖</span>Words</button>
+  <button class="nav-btn" onclick="showScreen('profile-screen',this)"><span class="icon">👤</span>Profile</button>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="close-modal">
+  <div class="modal">
+    <div class="modal-title">Quit this lesson?</div>
+    <div class="modal-body">Your progress in this lesson will be lost. Your streak and XP are safe.</div>
+    <button class="modal-btn primary" onclick="closeLesson()">Quit</button>
+    <button class="modal-btn secondary" onclick="closeModal('close-modal')">Keep Going</button>
+  </div>
+</div>
+<div class="modal-overlay" id="grammar-modal">
+  <div class="modal">
+    <div class="modal-title" id="gm-title">Grammar Tip</div>
+    <div class="modal-body" id="gm-body"></div>
+    <button class="modal-btn primary" onclick="closeModal('grammar-modal')">Got it!</button>
+  </div>
+</div>
+<div class="modal-overlay" id="hearts-modal">
+  <div class="modal">
+    <div class="modal-title">💔 Out of Hearts!</div>
+    <div class="modal-body">Your hearts refill over time. Review vocab to come back stronger!</div>
+    <button class="modal-btn primary" onclick="refillHearts()">Refill Hearts</button>
+    <button class="modal-btn secondary" onclick="closeModal('hearts-modal');closeLesson()">Exit</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  IMPROVED TTS — phoneme substitution map
+//  Converts Albanian text → approximate pronunciation
+//  that English TTS engines can handle better
+// ════════════════════════════════════════════════════
+const ALB_PHONEME_MAP = [
+  // Multi-char first (order matters)
+  [/xh/gi, 'j'],          // xh → j (as in "jam")
+  [/gj/gi, 'dy'],         // gj → dy
+  [/nj/gi, 'ny'],         // nj → ny (as in "canyon")
+  [/ll/gi, 'l'],          // ll → dark l
+  [/rr/gi, 'r'],          // rr → rolled r (approximate)
+  [/sh/gi, 'sh'],         // sh → sh (fine)
+  [/zh/gi, 'zh'],         // zh → zh
+  [/dh/gi, 'th'],         // dh → voiced th (as in "the")
+  [/th/gi, 'th'],         // th → voiceless th
+  [/\bë\b/gi, 'uh'],      // standalone ë
+  [/ë/gi, 'uh'],          // ë → "uh" (schwa)
+  [/ç/gi, 'ch'],          // ç → ch
+  [/q/gi, 'ch'],          // q → soft ch/ky sound
+  [/y/gi, 'ee'],          // Albanian y = vowel "i"
+  [/\bë/gi, 'uh'],
+  [/c/gi, 'ts'],          // c → ts
+  [/j/gi, 'y'],           // j → y (as in "yes")  — after xh already handled
+  [/x/gi, 'dz'],          // x → dz
+  [/z/gi, 'z'],
+  [/v/gi, 'v'],
+  [/f/gi, 'f'],
+  [/\bë$/gi, 'uh'],
+];
+
+function albanianToPhonetic(text) {
+  let t = text.toLowerCase();
+  ALB_PHONEME_MAP.forEach(([pat, rep]) => { t = t.replace(pat, rep); });
+  return t;
+}
+
+function speakAlbanian(text, onStart, onEnd) {
+  if (!('speechSynthesis' in window)) {
+    if (onStart) onStart();
+    setTimeout(() => { if (onEnd) onEnd(); }, 1000);
+    return;
+  }
+  window.speechSynthesis.cancel();
+
+  // Strategy: try Albanian voice first; if unavailable use phoneme-substituted text
+  const voices = window.speechSynthesis.getVoices();
+  const albVoice = voices.find(v => v.lang && (v.lang.startsWith('sq') || v.lang.startsWith('sq-')));
+
+  let utterText = text;
+  let utterLang = 'sq-AL';
+  let utterVoice = albVoice;
+
+  if (!albVoice) {
+    // Fall back: use phoneme-substituted text with English voice for better approximation
+    utterText = albanianToPhonetic(text);
+    utterLang = 'en-US';
+    utterVoice = voices.find(v => v.lang && v.lang.startsWith('en')) || null;
+  }
+
+  const u = new SpeechSynthesisUtterance(utterText);
+  u.lang = utterLang;
+  u.rate = albVoice ? 0.75 : 0.70;
+  u.pitch = 1.0;
+  if (utterVoice) u.voice = utterVoice;
+  u.onstart = () => { if (onStart) onStart(); };
+  u.onend = () => { if (onEnd) onEnd(); };
+  u.onerror = () => { if (onEnd) onEnd(); };
+  window.speechSynthesis.speak(u);
+}
+
+// ════════════════════════════════════════════════════
+//  VOCABULARY  (300+ entries across 10 units)
+// ════════════════════════════════════════════════════
+const VOCAB = [
+// ── UNIT 1: Greetings & Basics (words 0-19)
+  {al:"Përshëndetje",   en:"Hello",                ph:"per-shen-DEH-tye",  emoji:"👋", u:1},
+  {al:"Mirëmëngjes",    en:"Good morning",          ph:"mi-re-MEN-yes",     emoji:"🌅", u:1},
+  {al:"Mirëdita",       en:"Good afternoon",        ph:"mi-re-DEE-ta",      emoji:"☀️", u:1},
+  {al:"Natën e mirë",   en:"Good night",            ph:"NA-ten e MEE-re",   emoji:"🌙", u:1},
+  {al:"Mirupafshim",    en:"Goodbye",               ph:"mi-ru-PAF-shim",    emoji:"🚶", u:1},
+  {al:"Faleminderit",   en:"Thank you",             ph:"fa-le-min-DE-rit",  emoji:"🙏", u:1},
+  {al:"Ju lutem",       en:"Please",                ph:"yu LU-tem",         emoji:"🤲", u:1},
+  {al:"Po",             en:"Yes",                   ph:"poh",               emoji:"✅", u:1},
+  {al:"Jo",             en:"No",                    ph:"yoh",               emoji:"❌", u:1},
+  {al:"Më fal",         en:"Sorry / Excuse me",     ph:"me FAL",            emoji:"😔", u:1},
+  {al:"Mirë",           en:"Good / Well",           ph:"MEE-re",            emoji:"😊", u:1},
+  {al:"Keq",            en:"Bad",                   ph:"kech",              emoji:"😞", u:1},
+  {al:"Shumë",          en:"Very / Much",           ph:"SHOO-me",           emoji:"💯", u:1},
+  {al:"Pak",            en:"A little",              ph:"pak",               emoji:"🤏", u:1},
+  {al:"Çfarë",          en:"What",                  ph:"chfa-RE",           emoji:"❓", u:1},
+  {al:"Ku",             en:"Where",                 ph:"koo",               emoji:"📍", u:1},
+  {al:"Kur",            en:"When",                  ph:"koor",              emoji:"🕐", u:1},
+  {al:"Pse",            en:"Why",                   ph:"pseh",              emoji:"🤔", u:1},
+  {al:"Kush",           en:"Who",                   ph:"koosh",             emoji:"🙋", u:1},
+  {al:"Si",             en:"How",                   ph:"see",               emoji:"💬", u:1},
+
+// ── UNIT 2: People & Identity (words 20-39)
+  {al:"Unë",            en:"I / Me",                ph:"OO-ne",             emoji:"👤", u:2},
+  {al:"Ti",             en:"You (singular)",        ph:"tee",               emoji:"👉", u:2},
+  {al:"Ai",             en:"He",                    ph:"ay",                emoji:"🧑", u:2},
+  {al:"Ajo",            en:"She",                   ph:"AY-o",              emoji:"👩", u:2},
+  {al:"Ne",             en:"We",                    ph:"neh",               emoji:"👥", u:2},
+  {al:"Ju",             en:"You (plural/formal)",   ph:"yoo",               emoji:"👥", u:2},
+  {al:"Ata",            en:"They (masc.)",          ph:"AH-ta",             emoji:"👫", u:2},
+  {al:"Emri im",        en:"My name",               ph:"EM-ree eem",        emoji:"🪪", u:2},
+  {al:"Shqiptar",       en:"Albanian (masc.)",      ph:"shqip-TAR",         emoji:"🇦🇱", u:2},
+  {al:"Shqiptare",      en:"Albanian (fem.)",       ph:"shqip-TAH-re",      emoji:"🇦🇱", u:2},
+  {al:"Vend",           en:"Country / Place",       ph:"vend",              emoji:"🗺️", u:2},
+  {al:"Gjuhë",          en:"Language",              ph:"GYOO-he",           emoji:"🗣️", u:2},
+  {al:"Flas",           en:"I speak",               ph:"flas",              emoji:"💬", u:2},
+  {al:"Kuptoj",         en:"I understand",          ph:"kup-TOY",           emoji:"💡", u:2},
+  {al:"Nuk kuptoj",     en:"I don't understand",    ph:"nook kup-TOY",      emoji:"🤷", u:2},
+  {al:"Flisni ngadalë", en:"Speak slowly please",   ph:"FLIS-ni nga-DA-le", emoji:"🐢", u:2},
+  {al:"Mëso",           en:"Learn",                 ph:"me-SO",             emoji:"📚", u:2},
+  {al:"Repeat",         en:"Përsërit",              ph:"per-se-REET",       emoji:"🔄", u:2},
+  {al:"Mosha",          en:"Age",                   ph:"MO-sha",            emoji:"🎂", u:2},
+  {al:"Kombësi",        en:"Nationality",           ph:"kom-BE-see",        emoji:"🌍", u:2},
+
+// ── UNIT 3: Family (words 40-59)
+  {al:"Nënë",           en:"Mother",                ph:"NE-ne",             emoji:"👩", u:3},
+  {al:"Baba",           en:"Father",                ph:"BA-ba",             emoji:"👨", u:3},
+  {al:"Vëlla",          en:"Brother",               ph:"VEL-la",            emoji:"👦", u:3},
+  {al:"Motër",          en:"Sister",                ph:"MO-ter",            emoji:"👧", u:3},
+  {al:"Gjysh",          en:"Grandfather",           ph:"gyoosh",            emoji:"👴", u:3},
+  {al:"Gjyshe",         en:"Grandmother",           ph:"GYOO-she",          emoji:"👵", u:3},
+  {al:"Fëmijë",         en:"Child",                 ph:"fe-MI-ye",          emoji:"🧒", u:3},
+  {al:"Mik",            en:"Friend",                ph:"meek",              emoji:"🤝", u:3},
+  {al:"Burrë",          en:"Husband / Man",         ph:"BUR-re",            emoji:"🧑", u:3},
+  {al:"Grua",           en:"Wife / Woman",          ph:"GRU-a",             emoji:"👩", u:3},
+  {al:"Djalë",          en:"Boy / Son",             ph:"DYA-le",            emoji:"👦", u:3},
+  {al:"Vajzë",          en:"Girl / Daughter",       ph:"VAY-ze",            emoji:"👧", u:3},
+  {al:"Bebë",           en:"Baby",                  ph:"BE-be",             emoji:"👶", u:3},
+  {al:"Xhaxha",         en:"Uncle",                 ph:"JA-ja",             emoji:"🧔", u:3},
+  {al:"Teze",           en:"Aunt",                  ph:"TE-ze",             emoji:"👩", u:3},
+  {al:"Kushëri",        en:"Cousin",                ph:"koo-SHE-ree",       emoji:"🧑", u:3},
+  {al:"Familje",        en:"Family",                ph:"fa-MIL-ye",         emoji:"👨‍👩‍👧", u:3},
+  {al:"Martuar",        en:"Married",               ph:"mar-TOO-ar",        emoji:"💍", u:3},
+  {al:"Beqar",          en:"Single",                ph:"be-CHAR",           emoji:"🙋", u:3},
+  {al:"Dashuri",        en:"Love",                  ph:"da-SHOO-ree",       emoji:"❤️", u:3},
+
+// ── UNIT 4: Food & Drink (words 60-84)
+  {al:"Ujë",            en:"Water",                 ph:"OO-ye",             emoji:"💧", u:4},
+  {al:"Bukë",           en:"Bread",                 ph:"BOO-ke",            emoji:"🍞", u:4},
+  {al:"Mish",           en:"Meat",                  ph:"meesh",             emoji:"🥩", u:4},
+  {al:"Peshk",          en:"Fish",                  ph:"peshk",             emoji:"🐟", u:4},
+  {al:"Perime",         en:"Vegetables",            ph:"pe-RI-me",          emoji:"🥦", u:4},
+  {al:"Fruta",          en:"Fruit",                 ph:"FROO-ta",           emoji:"🍎", u:4},
+  {al:"Qumësht",        en:"Milk",                  ph:"CHOO-mesht",        emoji:"🥛", u:4},
+  {al:"Kafe",           en:"Coffee",                ph:"KA-fe",             emoji:"☕", u:4},
+  {al:"Çaj",            en:"Tea",                   ph:"chay",              emoji:"🍵", u:4},
+  {al:"Vezë",           en:"Egg",                   ph:"VE-ze",             emoji:"🥚", u:4},
+  {al:"Djathë",         en:"Cheese",                ph:"DYA-the",           emoji:"🧀", u:4},
+  {al:"Sheqer",         en:"Sugar",                 ph:"SHE-cher",          emoji:"🍬", u:4},
+  {al:"Kripë",          en:"Salt",                  ph:"KREE-pe",           emoji:"🧂", u:4},
+  {al:"Vaj",            en:"Oil",                   ph:"vay",               emoji:"🫙", u:4},
+  {al:"Miell",          en:"Flour",                 ph:"myell",             emoji:"🌾", u:4},
+  {al:"Patate",         en:"Potato",                ph:"pa-TA-te",          emoji:"🥔", u:4},
+  {al:"Domate",         en:"Tomato",                ph:"do-MA-te",          emoji:"🍅", u:4},
+  {al:"Sallatë",        en:"Salad",                 ph:"sa-LA-te",          emoji:"🥗", u:4},
+  {al:"Supë",           en:"Soup",                  ph:"SOO-pe",            emoji:"🍲", u:4},
+  {al:"Ëmbëlsirë",      en:"Dessert / Sweets",      ph:"em-bel-SEE-re",     emoji:"🍰", u:4},
+  {al:"Verë",           en:"Wine",                  ph:"VE-re",             emoji:"🍷", u:4},
+  {al:"Birrë",          en:"Beer",                  ph:"BEE-re",            emoji:"🍺", u:4},
+  {al:"Lëng",           en:"Juice",                 ph:"leng",              emoji:"🧃", u:4},
+  {al:"Akullore",       en:"Ice cream",             ph:"a-koo-LO-re",       emoji:"🍦", u:4},
+  {al:"Pica",           en:"Pizza",                 ph:"PEE-tsa",           emoji:"🍕", u:4},
+
+// ── UNIT 5: Numbers, Time & Calendar (words 85-114)
+  {al:"Një",            en:"One",                   ph:"nye",               emoji:"1️⃣", u:5},
+  {al:"Dy",             en:"Two",                   ph:"dee",               emoji:"2️⃣", u:5},
+  {al:"Tre",            en:"Three",                 ph:"treh",              emoji:"3️⃣", u:5},
+  {al:"Katër",          en:"Four",                  ph:"KA-ter",            emoji:"4️⃣", u:5},
+  {al:"Pesë",           en:"Five",                  ph:"PE-se",             emoji:"5️⃣", u:5},
+  {al:"Gjashtë",        en:"Six",                   ph:"GYASH-te",          emoji:"6️⃣", u:5},
+  {al:"Shtatë",         en:"Seven",                 ph:"SHTA-te",           emoji:"7️⃣", u:5},
+  {al:"Tetë",           en:"Eight",                 ph:"TE-te",             emoji:"8️⃣", u:5},
+  {al:"Nëntë",          en:"Nine",                  ph:"NEN-te",            emoji:"9️⃣", u:5},
+  {al:"Dhjetë",         en:"Ten",                   ph:"DHYE-te",           emoji:"🔟", u:5},
+  {al:"Njëzet",         en:"Twenty",                ph:"nye-ZET",           emoji:"2️⃣0️⃣", u:5},
+  {al:"Tridhjetë",      en:"Thirty",                ph:"tri-DHYE-te",       emoji:"3️⃣0️⃣", u:5},
+  {al:"Njëqind",        en:"One hundred",           ph:"nye-CHIND",         emoji:"💯", u:5},
+  {al:"Sot",            en:"Today",                 ph:"soht",              emoji:"📅", u:5},
+  {al:"Nesër",          en:"Tomorrow",              ph:"NE-ser",            emoji:"🔜", u:5},
+  {al:"Dje",            en:"Yesterday",             ph:"dyeh",              emoji:"🔙", u:5},
+  {al:"Orë",            en:"Hour / Clock",          ph:"O-re",              emoji:"🕐", u:5},
+  {al:"Minutë",         en:"Minute",                ph:"mi-NOO-te",         emoji:"⏱️", u:5},
+  {al:"Javë",           en:"Week",                  ph:"YA-ve",             emoji:"📆", u:5},
+  {al:"Muaj",           en:"Month",                 ph:"MOO-ay",            emoji:"📅", u:5},
+  {al:"Vit",            en:"Year",                  ph:"veet",              emoji:"🗓️", u:5},
+  {al:"E hënë",         en:"Monday",                ph:"e HE-ne",           emoji:"📋", u:5},
+  {al:"E martë",        en:"Tuesday",               ph:"e MAR-te",          emoji:"📋", u:5},
+  {al:"E mërkurë",      en:"Wednesday",             ph:"e mer-KOO-re",      emoji:"📋", u:5},
+  {al:"E enjte",        en:"Thursday",              ph:"e EN-te",           emoji:"📋", u:5},
+  {al:"E premte",       en:"Friday",                ph:"e PREM-te",         emoji:"🎉", u:5},
+  {al:"E shtunë",       en:"Saturday",              ph:"e SHTOO-ne",        emoji:"🌟", u:5},
+  {al:"E diel",         en:"Sunday",                ph:"e dee-EL",          emoji:"☀️", u:5},
+  {al:"Mëngjes",        en:"Morning",               ph:"men-YES",           emoji:"🌅", u:5},
+  {al:"Mbrëmje",        en:"Evening",               ph:"mBREM-ye",          emoji:"🌆", u:5},
+
+// ── UNIT 6: Travel & Places (words 115-139)
+  {al:"Hotel",          en:"Hotel",                 ph:"ho-TEL",            emoji:"🏨", u:6},
+  {al:"Restorant",      en:"Restaurant",            ph:"res-to-RANT",       emoji:"🍽️", u:6},
+  {al:"Aeroport",       en:"Airport",               ph:"a-e-ro-PORT",       emoji:"✈️", u:6},
+  {al:"Stacion",        en:"Station",               ph:"sta-TSYON",         emoji:"🚉", u:6},
+  {al:"Spital",         en:"Hospital",              ph:"spi-TAL",           emoji:"🏥", u:6},
+  {al:"Farmaci",        en:"Pharmacy",              ph:"far-ma-TSEE",       emoji:"💊", u:6},
+  {al:"Bankë",          en:"Bank",                  ph:"BAN-ke",            emoji:"🏦", u:6},
+  {al:"Treg",           en:"Market",                ph:"treg",              emoji:"🛒", u:6},
+  {al:"Rrugë",          en:"Street / Road",         ph:"RROO-gye",          emoji:"🛣️", u:6},
+  {al:"Majtë",          en:"Left",                  ph:"MAY-te",            emoji:"⬅️", u:6},
+  {al:"Djathtë",        en:"Right",                 ph:"DYATH-te",          emoji:"➡️", u:6},
+  {al:"Drejt",          en:"Straight ahead",        ph:"dreyt",             emoji:"⬆️", u:6},
+  {al:"Sa kushton?",    en:"How much is it?",       ph:"sa KUSH-ton",       emoji:"💰", u:6},
+  {al:"Ndihmë",         en:"Help",                  ph:"NDEE-me",           emoji:"🆘", u:6},
+  {al:"Polici",         en:"Police",                ph:"po-LEE-tsee",       emoji:"👮", u:6},
+  {al:"Biletë",         en:"Ticket",                ph:"bi-LE-te",          emoji:"🎫", u:6},
+  {al:"Pasaportë",      en:"Passport",              ph:"pa-sa-POR-te",      emoji:"📘", u:6},
+  {al:"Valixhe",        en:"Suitcase",              ph:"va-LEE-jhe",        emoji:"🧳", u:6},
+  {al:"Rezervim",       en:"Reservation",           ph:"re-zer-VEEM",       emoji:"📋", u:6},
+  {al:"Taksi",          en:"Taxi",                  ph:"TAK-see",           emoji:"🚕", u:6},
+  {al:"Autobus",        en:"Bus",                   ph:"ow-to-BOOS",        emoji:"🚌", u:6},
+  {al:"Makinë",         en:"Car",                   ph:"ma-KEE-ne",         emoji:"🚗", u:6},
+  {al:"Tren",           en:"Train",                 ph:"tren",              emoji:"🚆", u:6},
+  {al:"Plazh",          en:"Beach",                 ph:"plahj",             emoji:"🏖️", u:6},
+  {al:"Mal",            en:"Mountain",              ph:"mal",               emoji:"🏔️", u:6},
+
+// ── UNIT 7: Body & Health (words 140-159)
+  {al:"Kokë",           en:"Head",                  ph:"KO-ke",             emoji:"🗣️", u:7},
+  {al:"Sy",             en:"Eye",                   ph:"see",               emoji:"👁️", u:7},
+  {al:"Vesh",           en:"Ear",                   ph:"vesh",              emoji:"👂", u:7},
+  {al:"Hundë",          en:"Nose",                  ph:"HOON-de",           emoji:"👃", u:7},
+  {al:"Gojë",           en:"Mouth",                 ph:"GO-ye",             emoji:"👄", u:7},
+  {al:"Dhëmb",          en:"Tooth",                 ph:"dhemb",             emoji:"🦷", u:7},
+  {al:"Dorë",           en:"Hand / Arm",            ph:"DO-re",             emoji:"✋", u:7},
+  {al:"Këmbë",          en:"Foot / Leg",            ph:"KEM-be",            emoji:"🦵", u:7},
+  {al:"Zemër",          en:"Heart",                 ph:"ZE-mer",            emoji:"❤️", u:7},
+  {al:"Bark",           en:"Stomach / Belly",       ph:"bark",              emoji:"🫃", u:7},
+  {al:"Shëndet",        en:"Health",                ph:"shen-DET",          emoji:"💪", u:7},
+  {al:"Sëmurë",         en:"Sick / Ill",            ph:"se-MOO-re",         emoji:"🤒", u:7},
+  {al:"Dhemb",          en:"Pain / Ache",           ph:"dhemb",             emoji:"😣", u:7},
+  {al:"Ilaç",           en:"Medicine",              ph:"ee-LACH",           emoji:"💊", u:7},
+  {al:"Mjek",           en:"Doctor",                ph:"myeck",             emoji:"👨‍⚕️", u:7},
+  {al:"Infermiere",     en:"Nurse",                 ph:"in-fer-mee-E-re",   emoji:"👩‍⚕️", u:7},
+  {al:"Urgjencë",       en:"Emergency",             ph:"oor-GYEN-tse",      emoji:"🚨", u:7},
+  {al:"Lodhur",         en:"Tired",                 ph:"LO-dhur",           emoji:"😴", u:7},
+  {al:"I lirë",         en:"Free / Available",      ph:"ee LEE-re",         emoji:"🕊️", u:7},
+  {al:"Ndjej",          en:"I feel",                ph:"ndyey",             emoji:"🫀", u:7},
+
+// ── UNIT 8: Verbs & Actions (words 160-184)
+  {al:"Jam",            en:"I am",                  ph:"yam",               emoji:"🙋", u:8},
+  {al:"Është",          en:"Is / It is",            ph:"ESH-te",            emoji:"▶️", u:8},
+  {al:"Ka",             en:"Has / There is",        ph:"ka",                emoji:"✅", u:8},
+  {al:"Bëj",            en:"I do / make",           ph:"bey",               emoji:"🛠️", u:8},
+  {al:"Shkoj",          en:"I go",                  ph:"shkoy",             emoji:"🚶", u:8},
+  {al:"Vij",            en:"I come",                ph:"vee",               emoji:"🚶‍♂️", u:8},
+  {al:"Ha",             en:"I eat",                 ph:"ha",                emoji:"🍽️", u:8},
+  {al:"Pi",             en:"I drink",               ph:"pee",               emoji:"🥤", u:8},
+  {al:"Fle",            en:"I sleep",               ph:"fleh",              emoji:"😴", u:8},
+  {al:"Punoj",          en:"I work",                ph:"poo-NOY",           emoji:"💼", u:8},
+  {al:"Lexoj",          en:"I read",                ph:"le-KHOY",           emoji:"📖", u:8},
+  {al:"Shkruaj",        en:"I write",               ph:"shkROO-ay",         emoji:"✍️", u:8},
+  {al:"Dëgjoj",         en:"I listen / hear",       ph:"de-GYOY",           emoji:"👂", u:8},
+  {al:"Shoh",           en:"I see / watch",         ph:"shoh",              emoji:"👁️", u:8},
+  {al:"Dua",            en:"I want / love",         ph:"DOO-a",             emoji:"❤️", u:8},
+  {al:"Mund",           en:"I can",                 ph:"moond",             emoji:"💪", u:8},
+  {al:"Duhet",          en:"I must / need to",      ph:"DOO-het",           emoji:"❗", u:8},
+  {al:"Di",             en:"I know",                ph:"dee",               emoji:"💡", u:8},
+  {al:"Luaj",           en:"I play",                ph:"LOO-ay",            emoji:"🎮", u:8},
+  {al:"Mendoj",         en:"I think",               ph:"men-DOY",           emoji:"🤔", u:8},
+  {al:"Them",           en:"I say / tell",          ph:"them",              emoji:"💬", u:8},
+  {al:"Pyes",           en:"I ask",                 ph:"pyes",              emoji:"❓", u:8},
+  {al:"Përgjigjem",     en:"I answer",              ph:"per-GYEE-gyem",     emoji:"✅", u:8},
+  {al:"Hap",            en:"I open",                ph:"hap",               emoji:"🚪", u:8},
+  {al:"Mbyll",          en:"I close",               ph:"mbyell",            emoji:"🔒", u:8},
+
+// ── UNIT 9: Adjectives & Descriptions (words 185-209)
+  {al:"I madh",         en:"Big / Large (m.)",      ph:"ee madh",           emoji:"🐘", u:9},
+  {al:"I vogël",        en:"Small / Little (m.)",   ph:"ee VO-gel",         emoji:"🐭", u:9},
+  {al:"I gjatë",        en:"Tall / Long (m.)",      ph:"ee GYA-te",         emoji:"📏", u:9},
+  {al:"I shkurtër",     en:"Short (m.)",             ph:"ee shkoor-TER",     emoji:"📐", u:9},
+  {al:"I bukur",        en:"Beautiful / Nice (m.)", ph:"ee BOO-koor",       emoji:"😍", u:9},
+  {al:"I shëmtuar",     en:"Ugly (m.)",              ph:"ee shem-TOO-ar",    emoji:"😬", u:9},
+  {al:"I ri",           en:"Young / New (m.)",      ph:"ee ree",            emoji:"🌱", u:9},
+  {al:"I vjetër",       en:"Old (m.)",               ph:"ee vye-TER",        emoji:"🧓", u:9},
+  {al:"I ngrohtë",      en:"Warm / Hot (m.)",       ph:"ee NGRO-te",        emoji:"🔥", u:9},
+  {al:"I ftohtë",       en:"Cold (m.)",              ph:"ee FTO-te",         emoji:"❄️", u:9},
+  {al:"I shpejtë",      en:"Fast (m.)",              ph:"ee SHPEY-te",       emoji:"⚡", u:9},
+  {al:"I ngadalshëm",   en:"Slow (m.)",              ph:"ee nga-DAL-shem",   emoji:"🐢", u:9},
+  {al:"I lirë",         en:"Cheap / Free (m.)",     ph:"ee LEE-re",         emoji:"💸", u:9},
+  {al:"I shtrenjtë",    en:"Expensive (m.)",        ph:"ee SHTREN-yte",     emoji:"💎", u:9},
+  {al:"I lehtë",        en:"Easy / Light (m.)",     ph:"ee LEH-te",         emoji:"🍃", u:9},
+  {al:"I vështirë",     en:"Difficult / Hard (m.)", ph:"ee vesh-TEE-re",    emoji:"😤", u:9},
+  {al:"I lumtur",       en:"Happy (m.)",             ph:"ee LOOM-toor",      emoji:"😊", u:9},
+  {al:"I trishtuar",    en:"Sad (m.)",               ph:"ee treesh-TOO-ar",  emoji:"😢", u:9},
+  {al:"I lodhur",       en:"Tired (m.)",             ph:"ee LO-dhoor",       emoji:"😴", u:9},
+  {al:"I uritur",       en:"Hungry (m.)",            ph:"ee oo-REE-toor",    emoji:"🍽️", u:9},
+  {al:"I etur",         en:"Thirsty (m.)",           ph:"ee E-toor",         emoji:"💧", u:9},
+  {al:"I saktë",        en:"Correct / Exact (m.)",  ph:"ee SAK-te",         emoji:"✅", u:9},
+  {al:"I gabuar",       en:"Wrong / Incorrect (m.)",ph:"ee ga-BOO-ar",      emoji:"❌", u:9},
+  {al:"I hapur",        en:"Open (m.)",              ph:"ee HA-poor",        emoji:"🚪", u:9},
+  {al:"I mbyllur",      en:"Closed (m.)",            ph:"ee mBYEL-loor",     emoji:"🔒", u:9},
+
+// ── UNIT 10: Advanced — Phrases & Complex (words 210-239)
+  {al:"Mund të ndihmoni?",    en:"Can you help me?",          ph:"moond te nDEE-mo-nee",      emoji:"🙏", u:10},
+  {al:"Ku është...?",         en:"Where is...?",              ph:"koo ESH-te",                emoji:"📍", u:10},
+  {al:"Sa kushton kjo?",      en:"How much does this cost?",  ph:"sa KUSH-ton kyo",           emoji:"💰", u:10},
+  {al:"E dua këtë",           en:"I want this",               ph:"e DOO-a ke-TE",             emoji:"❤️", u:10},
+  {al:"Nuk e dua",            en:"I don't want this",         ph:"nook e DOO-a",              emoji:"🚫", u:10},
+  {al:"A flisni anglisht?",   en:"Do you speak English?",     ph:"a FLIS-nee an-GLEESHT",     emoji:"🇬🇧", u:10},
+  {al:"Mund të përsërisni?",  en:"Can you repeat that?",      ph:"moond te per-se-REES-nee",  emoji:"🔄", u:10},
+  {al:"Nuk e kuptoj",         en:"I don't understand",        ph:"nook e kup-TOY",            emoji:"🤷", u:10},
+  {al:"Keni një dhomë?",      en:"Do you have a room?",       ph:"KE-nee nye DHO-me",         emoji:"🛏️", u:10},
+  {al:"Çfarë orë është?",     en:"What time is it?",          ph:"chfa-RE O-re ESH-te",       emoji:"🕐", u:10},
+  {al:"Ku mund të ha?",       en:"Where can I eat?",          ph:"koo moond te ha",           emoji:"🍽️", u:10},
+  {al:"E dua Shqipërinë",     en:"I love Albania",            ph:"e DOO-a shqip-e-REE-ne",    emoji:"🇦🇱", u:10},
+  {al:"Faleminderit shumë",   en:"Thank you very much",       ph:"fa-le-min-DE-reet SHOO-me", emoji:"🙏", u:10},
+  {al:"S'ka problem",         en:"No problem",                ph:"ska pro-BLEM",              emoji:"😌", u:10},
+  {al:"Me vjen mirë",         en:"I'm glad / Nice to meet you",ph:"me vyen MEE-re",           emoji:"😊", u:10},
+  {al:"Mirë se erdhe",        en:"Welcome (to one person)",   ph:"MEE-re se ER-dhe",          emoji:"🤗", u:10},
+  {al:"Gëzuar",               en:"Cheers! / Congratulations!",ph:"ge-ZOO-ar",                emoji:"🥂", u:10},
+  {al:"Urime",                en:"Congratulations",           ph:"oo-REE-me",                 emoji:"🎉", u:10},
+  {al:"Nga vini?",            en:"Where are you from?",       ph:"nga VEE-nee",               emoji:"🌍", u:10},
+  {al:"Jam nga...",           en:"I am from...",              ph:"yam nga",                   emoji:"🏠", u:10},
+  {al:"Sa vjeç jeni?",        en:"How old are you?",          ph:"sa vyech YE-nee",           emoji:"🎂", u:10},
+  {al:"Kam ... vjeç",         en:"I am ... years old",        ph:"kam ... vyech",             emoji:"🎂", u:10},
+  {al:"Çfarë pune bëni?",     en:"What do you do for work?",  ph:"chfa-RE POO-ne BE-nee",     emoji:"💼", u:10},
+  {al:"Punoi si...",          en:"I work as a...",            ph:"poo-NOY see",               emoji:"👷", u:10},
+  {al:"Keni fëmijë?",         en:"Do you have children?",     ph:"KE-nee fe-MI-ye",           emoji:"👶", u:10},
+  {al:"Po, kam dy fëmijë",    en:"Yes, I have two children",  ph:"po kam dee fe-MI-ye",       emoji:"👶👶", u:10},
+  {al:"Çfarë do të pini?",    en:"What would you like to drink?",ph:"chfa-RE do te PEE-nee",  emoji:"🥤", u:10},
+  {al:"Urdhëroni",            en:"Here you go / Go ahead",    ph:"oor-dhe-RO-nee",            emoji:"🫱", u:10},
+  {al:"Llogarinë, ju lutem",  en:"The bill, please",          ph:"llo-ga-REE-ne yu LU-tem",   emoji:"🧾", u:10},
+  {al:"Ishte shumë e mirë",   en:"It was very good",          ph:"ISH-te SHOO-me e MEE-re",   emoji:"😋", u:10},
+];
+
+// ════════════════════════════════════════════════════
+//  SENTENCES (Albanian sentence → English + word breakdown)
+// ════════════════════════════════════════════════════
+const SENTENCES = {
+  1: [
+    {al:"Mirëmëngjes! Si jeni?",         en:"Good morning! How are you?",       breakdown:[{w:"Mirëmëngjes",m:"Good morning"},{w:"Si",m:"How"},{w:"jeni",m:"are you (formal)"}]},
+    {al:"Unë jam mirë, faleminderit.",   en:"I am well, thank you.",             breakdown:[{w:"Unë",m:"I"},{w:"jam",m:"am"},{w:"mirë",m:"well"},{w:"faleminderit",m:"thank you"}]},
+    {al:"Emri im është...",              en:"My name is...",                     breakdown:[{w:"Emri",m:"Name"},{w:"im",m:"my"},{w:"është",m:"is"}]},
+  ],
+  2: [
+    {al:"Flas pak shqip.",               en:"I speak a little Albanian.",        breakdown:[{w:"Flas",m:"I speak"},{w:"pak",m:"a little"},{w:"shqip",m:"Albanian (language)"}]},
+    {al:"Nuk kuptoj mirë.",              en:"I don't understand well.",          breakdown:[{w:"Nuk",m:"Not"},{w:"kuptoj",m:"I understand"},{w:"mirë",m:"well"}]},
+    {al:"Flisni ngadalë, ju lutem.",     en:"Please speak slowly.",              breakdown:[{w:"Flisni",m:"Speak (you, formal)"},{w:"ngadalë",m:"slowly"},{w:"ju lutem",m:"please"}]},
+  ],
+  3: [
+    {al:"Kjo është familja ime.",        en:"This is my family.",                breakdown:[{w:"Kjo",m:"This"},{w:"është",m:"is"},{w:"familja",m:"the family"},{w:"ime",m:"my"}]},
+    {al:"Unë kam dy vëllezër.",          en:"I have two brothers.",              breakdown:[{w:"Unë",m:"I"},{w:"kam",m:"have"},{w:"dy",m:"two"},{w:"vëllezër",m:"brothers"}]},
+    {al:"Ata janë shumë të mirë.",       en:"They are very good.",               breakdown:[{w:"Ata",m:"They"},{w:"janë",m:"are"},{w:"shumë",m:"very"},{w:"të mirë",m:"good/kind"}]},
+  ],
+  4: [
+    {al:"Dua të ha diçka.",              en:"I want to eat something.",          breakdown:[{w:"Dua",m:"I want"},{w:"të",m:"to"},{w:"ha",m:"eat"},{w:"diçka",m:"something"}]},
+    {al:"Mund të marr menunë?",          en:"Can I have the menu?",              breakdown:[{w:"Mund",m:"Can"},{w:"të",m:"to/that"},{w:"marr",m:"I take/get"},{w:"menunë",m:"the menu"}]},
+    {al:"Llogarinë, ju lutem!",          en:"The bill, please!",                 breakdown:[{w:"Llogarinë",m:"The bill"},{w:"ju lutem",m:"please"}]},
+  ],
+  5: [
+    {al:"Çfarë orë është tani?",         en:"What time is it now?",             breakdown:[{w:"Çfarë",m:"What"},{w:"orë",m:"time/hour"},{w:"është",m:"is"},{w:"tani",m:"now"}]},
+    {al:"Sot është e hënë.",             en:"Today is Monday.",                  breakdown:[{w:"Sot",m:"Today"},{w:"është",m:"is"},{w:"e hënë",m:"Monday"}]},
+    {al:"Nesër do të shkoj.",            en:"Tomorrow I will go.",               breakdown:[{w:"Nesër",m:"Tomorrow"},{w:"do të",m:"will"},{w:"shkoj",m:"I go"}]},
+  ],
+  6: [
+    {al:"Ku është hoteli?",              en:"Where is the hotel?",               breakdown:[{w:"Ku",m:"Where"},{w:"është",m:"is"},{w:"hoteli",m:"the hotel"}]},
+    {al:"Sa kushton bileta?",            en:"How much is the ticket?",           breakdown:[{w:"Sa",m:"How much"},{w:"kushton",m:"costs"},{w:"bileta",m:"the ticket"}]},
+    {al:"Dua të rezervoj një dhomë.",    en:"I want to book a room.",            breakdown:[{w:"Dua",m:"I want"},{w:"të rezervoj",m:"to book"},{w:"një dhomë",m:"a room"}]},
+  ],
+  7: [
+    {al:"Ndjej dhembje në kokë.",        en:"I have a headache.",                breakdown:[{w:"Ndjej",m:"I feel"},{w:"dhembje",m:"pain"},{w:"në",m:"in"},{w:"kokë",m:"head"}]},
+    {al:"Kam nevojë për mjek.",          en:"I need a doctor.",                  breakdown:[{w:"Kam",m:"I have"},{w:"nevojë",m:"need"},{w:"për",m:"for"},{w:"mjek",m:"a doctor"}]},
+    {al:"A keni ilaç?",                  en:"Do you have medicine?",             breakdown:[{w:"A",m:"(question marker)"},{w:"keni",m:"do you have"},{w:"ilaç",m:"medicine"}]},
+  ],
+  8: [
+    {al:"Unë punoj çdo ditë.",           en:"I work every day.",                 breakdown:[{w:"Unë",m:"I"},{w:"punoj",m:"work"},{w:"çdo",m:"every"},{w:"ditë",m:"day"}]},
+    {al:"Ai lexon një libër.",           en:"He reads a book.",                  breakdown:[{w:"Ai",m:"He"},{w:"lexon",m:"reads"},{w:"një",m:"a"},{w:"libër",m:"book"}]},
+    {al:"Ne shkojmë në shkollë.",        en:"We go to school.",                  breakdown:[{w:"Ne",m:"We"},{w:"shkojmë",m:"go"},{w:"në",m:"to"},{w:"shkollë",m:"school"}]},
+  ],
+  9: [
+    {al:"Ky qytet është shumë i bukur.", en:"This city is very beautiful.",     breakdown:[{w:"Ky",m:"This"},{w:"qytet",m:"city"},{w:"është",m:"is"},{w:"shumë",m:"very"},{w:"i bukur",m:"beautiful"}]},
+    {al:"Ushqimi ishte i shijshëm.",     en:"The food was delicious.",           breakdown:[{w:"Ushqimi",m:"The food"},{w:"ishte",m:"was"},{w:"i shijshëm",m:"delicious"}]},
+    {al:"Kjo është shumë e vështirë.",   en:"This is very difficult.",           breakdown:[{w:"Kjo",m:"This"},{w:"është",m:"is"},{w:"shumë",m:"very"},{w:"e vështirë",m:"difficult"}]},
+  ],
+  10: [
+    {al:"Sa kohë keni jetuar në Shqipëri?", en:"How long have you lived in Albania?", breakdown:[{w:"Sa kohë",m:"How long"},{w:"keni jetuar",m:"have you lived"},{w:"në",m:"in"},{w:"Shqipëri",m:"Albania"}]},
+    {al:"Shqipja është gjuhë e bukur.",     en:"Albanian is a beautiful language.",   breakdown:[{w:"Shqipja",m:"Albanian (language)"},{w:"është",m:"is"},{w:"gjuhë",m:"language"},{w:"e bukur",m:"beautiful"}]},
+    {al:"Shpresoj të kthehemi sërisht.",    en:"I hope we come back again.",          breakdown:[{w:"Shpresoj",m:"I hope"},{w:"të kthehemi",m:"we return"},{w:"sërisht",m:"again"}]},
+  ],
+};
+
+// ════════════════════════════════════════════════════
+//  GRAMMAR TIPS
+// ════════════════════════════════════════════════════
+const GRAMMAR_TIPS = {
+  1:{title:"Albanian Alphabet & Sounds 🔤",body:"Albanian has 36 letters. Key sounds: 'ë' = schwa (like 'u' in 'butter'). 'ç' = 'ch'. 'xh' = 'j' in jam. 'gj' = dy sound. 'dh' = voiced 'th' (as in 'the'). 'q' = soft 'ky'. 'll' = dark 'l'. 'rr' = rolled 'r'. Stress usually falls on the last syllable."},
+  2:{title:"Pronouns & Verb 'To Be' 🙋",body:"Albanian pronouns: unë(I), ti(you), ai/ajo(he/she), ne(we), ju(you pl), ata/ato(they). The verb 'to be': jam(I am), je(you are), është(is), jemi(we are), jeni(you are), janë(they are). Note: Albanian drops pronouns often since the verb ending shows the person."},
+  3:{title:"Noun Gender & Articles 🏷️",body:"Albanian nouns are masculine or feminine. Articles are postfixed: 'djalë'(boy) → 'djali'(the boy). 'vajzë'(girl) → 'vajza'(the girl). Indefinite: 'një djalë' = a boy. Nouns also change in plural: 'djalë'→'djem', 'vajzë'→'vajza'. Gender affects adjectives too!"},
+  4:{title:"Food & Definite Forms 🍽️",body:"When ordering food, you use the definite form: 'Dua bukën' (I want the bread). Key phrase: 'Mund të marr...?' = Can I have...? Menu items often use the indefinite: 'Një kafe, ju lutem' = A coffee, please. 'Sa kushton?' = How much? 'Llogarinë!' = The bill!"},
+  5:{title:"Telling Time in Albanian 🕐",body:"'Sa është ora?' = What time is it? 'Ora është tre' = It is three o'clock. 'Ora është tre e gjysmë' = 3:30. 'Ora është katër e çerek' = 4:15. Days of week all start with 'E': E hënë(Mon), E martë(Tue), E mërkurë(Wed), E enjte(Thu), E premte(Fri), E shtunë(Sat), E diel(Sun)."},
+  6:{title:"Asking for Directions 🗺️",body:"Key phrases: 'Ku është...?' = Where is...? 'Ndizeni majtë/djathtë' = Turn left/right. 'Drejtë' = Straight. 'Afër' = Near. 'Larg' = Far. 'Sa larg është?' = How far is it? 'Rreth...minuta me këmbë' = About...minutes on foot. Albanians are very friendly and love helping tourists!"},
+  7:{title:"Health Phrases 🏥",body:"'Ndjej keq' = I feel bad/ill. 'Dhemb koka' = Head hurts. 'Dhemb barku' = Stomach hurts. 'Kam ethe' = I have a fever. 'Jam alergjik ndaj...' = I am allergic to... 'Thirrni ambulancën!' = Call an ambulance! 'Ku është farmacia?' = Where is the pharmacy?"},
+  8:{title:"Albanian Verb Conjugation 📚",body:"Present tense of 'punoj'(work): punoj(I), punon(you), punon(he/she), punojmë(we), punoni(you pl), punojnë(they). Past: punova(I worked). Future: do të punoj(I will work). Negative: 'nuk' before verb. 'Nuk punoj sot' = I don't work today. Modal: 'mund'(can) + 'duhet'(must)."},
+  9:{title:"Adjectives in Albanian 🎨",body:"Adjectives agree with noun gender. Masculine: 'i bukur'(beautiful). Feminine: 'e bukur'. Plural: 'të bukur'. They usually come after the noun with 'i/e/të': 'djalë i gjatë'(tall boy), 'vajzë e gjatë'(tall girl). Comparative: 'më i gjatë' = taller. Superlative: 'më i gjati' = the tallest."},
+  10:{title:"Advanced: Subjunctive & Complex Sentences 🎓",body:"The subjunctive 'të' is key in Albanian: 'Dua të shkoj'(I want to go), 'Mund të vish?'(Can you come?), 'Duhet të lexosh'(You must read). Conditional: 'Do të doja...'(I would like...). Reported speech: 'Tha që...'(He said that...). Connecting: 'sepse'(because), 'por'(but), 'dhe'(and), 'ose'(or), 'megjithëse'(although)."},
+};
+
+// ════════════════════════════════════════════════════
+//  UNITS & LESSONS  (10 units, 5 lessons each = 50)
+// ════════════════════════════════════════════════════
+const UNITS = [
+  {title:"Unit 1 — Greetings & Questions",emoji:"👋",color:"#3DAA47",
+   lessons:[
+    {title:"First Words",         emoji:"👋", words:[0,1,2,3,4],        hasSentences:true},
+    {title:"Polite Phrases",      emoji:"🙏", words:[5,6,7,8,9],        hasSentences:false},
+    {title:"Question Words",      emoji:"❓", words:[14,15,16,17,18,19], hasSentences:false},
+    {title:"Describing Things",   emoji:"💬", words:[10,11,12,13],       hasSentences:false},
+    {title:"Unit 1 Review",       emoji:"⭐", words:[0,5,7,10,14,15],   hasSentences:true},
+   ]},
+  {title:"Unit 2 — People & Language",emoji:"🗣️",color:"#1FAEE8",
+   lessons:[
+    {title:"Pronouns",            emoji:"👤", words:[20,21,22,23,24,25],  hasSentences:false},
+    {title:"Speaking Albanian",   emoji:"🗣️", words:[30,31,32,33,34,35], hasSentences:true},
+    {title:"Identity Words",      emoji:"🪪", words:[27,28,29,36,37,38,39], hasSentences:false},
+    {title:"Meeting People",      emoji:"🤝", words:[20,27,30,31,32],    hasSentences:true},
+    {title:"Unit 2 Review",       emoji:"⭐", words:[20,21,30,32,33],    hasSentences:true},
+   ]},
+  {title:"Unit 3 — Family & Relationships",emoji:"👨‍👩‍👧",color:"#E91E8C",
+   lessons:[
+    {title:"Parents & Siblings",  emoji:"👨‍👩‍👧", words:[40,41,42,43,56],   hasSentences:true},
+    {title:"Extended Family",     emoji:"👴",   words:[44,45,52,53,54,55], hasSentences:false},
+    {title:"People & Partners",   emoji:"💑",   words:[48,49,50,51,46,47], hasSentences:false},
+    {title:"Relationships",       emoji:"❤️",   words:[56,57,58,59,40,41], hasSentences:true},
+    {title:"Unit 3 Review",       emoji:"⭐",   words:[40,42,44,48,52,56], hasSentences:true},
+   ]},
+  {title:"Unit 4 — Food & Restaurants",emoji:"🍽️",color:"#FF9600",
+   lessons:[
+    {title:"Drinks",              emoji:"☕",   words:[66,67,68,70,80,81,82], hasSentences:false},
+    {title:"Food Staples",        emoji:"🍞",   words:[60,61,62,63,64,65,69], hasSentences:false},
+    {title:"At the Table",        emoji:"🧀",   words:[70,71,72,73,74,75],    hasSentences:true},
+    {title:"Market & Cooking",    emoji:"🛒",   words:[73,74,75,76,77,78,79], hasSentences:false},
+    {title:"Ordering Food",       emoji:"🍕",   words:[60,66,67,68,83,84],    hasSentences:true},
+   ]},
+  {title:"Unit 5 — Numbers, Time & Calendar",emoji:"🔢",color:"#9B59D0",
+   lessons:[
+    {title:"Numbers 1-10",        emoji:"🔢",   words:[85,86,87,88,89,90,91,92,93,94], hasSentences:false},
+    {title:"Larger Numbers",      emoji:"💯",   words:[95,96,97],                        hasSentences:false},
+    {title:"Days of the Week",    emoji:"📅",   words:[106,107,108,109,110,111,112],    hasSentences:true},
+    {title:"Time & Periods",      emoji:"🕐",   words:[98,99,100,101,102,103,104,105,113,114], hasSentences:true},
+    {title:"Unit 5 Review",       emoji:"⭐",   words:[85,87,89,94,98,106,113],         hasSentences:true},
+   ]},
+  {title:"Unit 6 — Travel & Getting Around",emoji:"✈️",color:"#00BFA5",
+   lessons:[
+    {title:"Transport",           emoji:"🚗",   words:[135,136,137,138,115,118],         hasSentences:false},
+    {title:"Places in Town",      emoji:"🏙️",  words:[116,117,119,120,121,122,123],     hasSentences:false},
+    {title:"Directions",          emoji:"🗺️",  words:[124,125,126,113,127,128],          hasSentences:true},
+    {title:"Hotel & Airport",     emoji:"🏨",   words:[115,116,132,133,130,131],          hasSentences:true},
+    {title:"Unit 6 Review",       emoji:"⭐",   words:[115,118,124,127,129,132,135],     hasSentences:true},
+   ]},
+  {title:"Unit 7 — Body & Health",emoji:"💪",color:"#FF5722",
+   lessons:[
+    {title:"The Body",            emoji:"🧍",   words:[140,141,142,143,144,145,146,147], hasSentences:false},
+    {title:"At the Doctor",       emoji:"👨‍⚕️", words:[154,155,156,157,158,159,150],      hasSentences:true},
+    {title:"How You Feel",        emoji:"😊",   words:[148,149,150,151,152,153,157],     hasSentences:true},
+    {title:"Emergencies",         emoji:"🚨",   words:[156,157,158,159,148,155],          hasSentences:false},
+    {title:"Unit 7 Review",       emoji:"⭐",   words:[140,145,148,150,154,156],          hasSentences:true},
+   ]},
+  {title:"Unit 8 — Verbs & Actions",emoji:"🏃",color:"#795548",
+   lessons:[
+    {title:"Essential Verbs",     emoji:"🛠️",  words:[160,161,162,163,164,165,166,167], hasSentences:false},
+    {title:"Daily Actions",       emoji:"📅",   words:[168,169,170,171,172,173],          hasSentences:true},
+    {title:"Communication Verbs", emoji:"💬",   words:[174,175,176,177,178,179,180],      hasSentences:false},
+    {title:"More Actions",        emoji:"🎮",   words:[181,182,183,184,160,161],          hasSentences:true},
+    {title:"Unit 8 Review",       emoji:"⭐",   words:[160,164,168,172,177,181],          hasSentences:true},
+   ]},
+  {title:"Unit 9 — Adjectives & Descriptions",emoji:"🎨",color:"#607D8B",
+   lessons:[
+    {title:"Size & Shape",        emoji:"📏",   words:[185,186,187,188,194,195],          hasSentences:false},
+    {title:"Appearance",          emoji:"😍",   words:[189,190,191,192,193],              hasSentences:false},
+    {title:"Feelings",            emoji:"😊",   words:[201,202,203,204,205,206],          hasSentences:true},
+    {title:"Properties",          emoji:"⚡",   words:[196,197,198,199,200,207,208],      hasSentences:true},
+    {title:"Unit 9 Review",       emoji:"⭐",   words:[185,189,193,197,201,205,209],      hasSentences:true},
+   ]},
+  {title:"Unit 10 — Advanced Fluency",emoji:"🎓",color:"#3F51B5",
+   lessons:[
+    {title:"Complex Phrases",     emoji:"💬",   words:[210,211,212,213,214,215,216],      hasSentences:true},
+    {title:"Social Conversation",  emoji:"🤝",   words:[224,225,226,227,228,229,230,231],  hasSentences:true},
+    {title:"Expressing Opinions",  emoji:"🗳️",  words:[217,218,219,220,221,222,223],      hasSentences:true},
+    {title:"Real World Albanian",  emoji:"🌍",   words:[232,233,234,235,236,237,238,239],  hasSentences:true},
+    {title:"Fluency Review",       emoji:"🏆",   words:[210,215,220,225,229,232,237],      hasSentences:true},
+   ]},
+];
+
+const ALL_LESSONS = [];
+UNITS.forEach((unit,ui) => {
+  unit.lessons.forEach(lesson => {
+    ALL_LESSONS.push({
+      ...lesson, unitIndex:ui,
+      unitTitle:unit.title, unitColor:unit.color,
+      globalIndex:ALL_LESSONS.length, status:"locked"
+    });
+  });
+});
+ALL_LESSONS.forEach((l,i) => { l.status = i<3?"done":i===3?"current":"locked"; });
+
+// ════════════════════════════════════════════════════
+//  SRS
+// ════════════════════════════════════════════════════
+const SRS = {};
+VOCAB.forEach((_,i) => { SRS[i]={interval:1,ease:2.5,due:0,reviews:0}; });
+
+function srsReview(idx, correct) {
+  const c=SRS[idx];
+  if(!c) return;
+  if(correct){c.ease=Math.max(1.3,c.ease+0.1);c.interval=Math.round(c.interval*c.ease);c.reviews++;}
+  else{c.ease=Math.max(1.3,c.ease-.2);c.interval=1;}
+  c.due=Date.now()+c.interval*86400000;
+}
+
+function srsBadge(idx) {
+  const c=SRS[idx];
+  if(!c||c.reviews===0) return {label:"New",cls:"srs-new"};
+  if(Date.now()>c.due) return {label:"Due",cls:"srs-due"};
+  if(c.interval<3) return {label:"Learning",cls:"srs-learning"};
+  return {label:"Review",cls:"srs-review"};
+}
+
+// ════════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════════
+const S = {
+  xp:0, streak:0, lessonsCompleted:0,
+  globalHearts:5, heartsLastRefill:Date.now(),
+  dailyXP:0, dailyGoal:50, dailyDate:'', lastActiveDate:'',
+  streakFreezeAvail:1, onboardDone:false, userGoal:'', userTime:'10',
+  currentLessonIdx:null, exercises:[], exIdx:0,
+  hearts:3, correct:0, total:0, waitNext:false, cardFlipped:false,
+  retryQueue:[], inRetry:false,
+  bonusWords:[], bonusScore:0, bonusTimer:null,
+};
+
+function saveState() {
+  try {
+    localStorage.setItem('shqipgo_v3', JSON.stringify({
+      xp:S.xp, streak:S.streak, lessonsCompleted:S.lessonsCompleted,
+      globalHearts:S.globalHearts, heartsLastRefill:S.heartsLastRefill,
+      dailyXP:S.dailyXP, dailyGoal:S.dailyGoal, dailyDate:S.dailyDate,
+      lastActiveDate:S.lastActiveDate, streakFreezeAvail:S.streakFreezeAvail,
+      onboardDone:S.onboardDone, userGoal:S.userGoal, userTime:S.userTime,
+      lessonStatuses:ALL_LESSONS.map(l=>l.status), srs:SRS,
+    }));
+  } catch(e){}
+}
+
+function loadState() {
+  try {
+    const d = JSON.parse(localStorage.getItem('shqipgo_v3')||'null');
+    if(!d) return false;
+    Object.assign(S, {xp:d.xp||0,streak:d.streak||0,lessonsCompleted:d.lessonsCompleted||0,
+      globalHearts:d.globalHearts!=null?d.globalHearts:5,heartsLastRefill:d.heartsLastRefill||Date.now(),
+      dailyXP:d.dailyXP||0,dailyGoal:d.dailyGoal||50,dailyDate:d.dailyDate||'',
+      lastActiveDate:d.lastActiveDate||'',streakFreezeAvail:d.streakFreezeAvail!=null?d.streakFreezeAvail:1,
+      onboardDone:d.onboardDone||false,userGoal:d.userGoal||'',userTime:d.userTime||'10'
+    });
+    if(d.lessonStatuses) d.lessonStatuses.forEach((st,i)=>{if(ALL_LESSONS[i])ALL_LESSONS[i].status=st;});
+    if(d.srs) Object.keys(d.srs).forEach(k=>{SRS[k]=d.srs[k];});
+    return true;
+  } catch(e){return false;}
+}
+
+// ════════════════════════════════════════════════════
+//  ACTIVE RECALL LESSON BUILDER
+// ════════════════════════════════════════════════════
+function buildLesson(vocabSlice, unitIdx, hasSentences) {
+  const exercises = [];
+  const n = vocabSlice.length;
+
+  // Phase 1: introduce words as flashcards (with example sentence if available)
+  vocabSlice.forEach(w => {
+    exercises.push({type:"flashcard", word:w});
+  });
+
+  // Optional: one sentence card mid-lesson
+  const sents = SENTENCES[unitIdx+1] || [];
+  if (hasSentences && sents.length > 0) {
+    const s = sents[Math.floor(Math.random()*sents.length)];
+    // insert sentence card after flashcards
+    exercises.push({type:"sentence", sentence:s});
+  }
+
+  // Phase 2: recall — each word tested with different type
+  // Never the same word consecutively
+  const recallTypes = ["mcq","typing","listening","arrange"];
+  const pool = vocabSlice.map((w,i) => ({
+    word:w, type:recallTypes[i % recallTypes.length],
+    vocabIdx:VOCAB.indexOf(w),
+  }));
+
+  // Shuffle ensuring no adjacency
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  for(let i=1;i<pool.length;i++){
+    if(pool[i].word===pool[i-1].word){
+      for(let j=i+1;j<pool.length;j++){if(pool[j].word!==pool[i-1].word){[pool[i],pool[j]]=[pool[j],pool[i]];break;}}
+    }
+  }
+
+  pool.forEach(({word, type, vocabIdx}) => {
+    const sameUnit = VOCAB.filter(v=>v!==word&&v.u===word.u);
+    const anyVocab = VOCAB.filter(v=>v!==word);
+    const distPool = sameUnit.length>=3 ? sameUnit : anyVocab;
+    const distractors = distPool.sort(()=>Math.random()-.5).slice(0,3).map(v=>v.en);
+    const options = [...distractors, word.en].sort(()=>Math.random()-.5);
+
+    if(type==="mcq"){
+      exercises.push({type:"mcq",prompt:`What does "${word.al}" mean?`,correct:word.en,options,vocabIdx});
+    } else if(type==="typing"){
+      exercises.push({type:"typing",prompt:`Write "${word.en}" in Albanian:`,correct:word.al,word,vocabIdx});
+    } else if(type==="listening"){
+      exercises.push({type:"listening",prompt:"Listen and choose the correct translation",word,correct:word.en,options,vocabIdx});
+    } else if(type==="arrange"){
+      // Word arrangement: translate a short phrase by tapping words in order
+      // Use the word + 2 other words as a mini-sentence to arrange back to English
+      const chips = word.en.split(' ').concat(
+        distPool.sort(()=>Math.random()-.5).slice(0,2).map(v=>v.en.split(' ')[0])
+      ).sort(()=>Math.random()-.5);
+      exercises.push({type:"arrange",prompt:`Arrange the English translation of "${word.al}":`,
+        targetWords:word.en.split(' '), allChips:chips, vocabIdx});
+    }
+  });
+
+  return exercises;
+}
+
+// ════════════════════════════════════════════════════
+//  ONBOARDING
+// ════════════════════════════════════════════════════
+const obSel = {};
+function obNext(from) {
+  document.getElementById('ob'+from).classList.remove('active');
+  document.getElementById('ob'+(from+1)).classList.add('active');
+}
+function selectOb(btn,key,val) {
+  obSel[key]=val;
+  btn.closest('.ob-options').querySelectorAll('.ob-opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const nb=btn.closest('.ob-slide').querySelector('.ob-btn');
+  if(nb) nb.disabled=false;
+}
+function finishOnboard(){
+  S.userGoal=obSel.goal||'curiosity'; S.userTime=obSel.time||'10';
+  S.dailyGoal=parseInt(S.userTime)*5; S.onboardDone=true;
+  saveState();
+  document.getElementById('onboard-screen').classList.remove('active');
+  document.getElementById('home-screen').classList.add('active');
+  document.getElementById('bottom-nav').style.display='flex';
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  renderHome();
+}
+
+// ════════════════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ════════════════════════════════════════════════════
+function showScreen(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='vocab-screen') renderVocab();
+  if(id==='profile-screen') updateProfile();
+  if(id==='home-screen'){ renderHome(); checkHeartRefill(); }
+}
+
+// ════════════════════════════════════════════════════
+//  HOME
+// ════════════════════════════════════════════════════
+function renderHome(){
+  const wrap=document.getElementById('units-wrap');
+  wrap.innerHTML='';
+  wrap.style.cssText='display:flex;flex-direction:column;gap:14px;padding:0 0 14px';
+
+  UNITS.forEach((unit,ui)=>{
+    const unitLessons=ALL_LESSONS.filter(l=>l.unitIndex===ui);
+    const done=unitLessons.filter(l=>l.status==='done').length;
+    const isLocked=unitLessons.every(l=>l.status==='locked');
+
+    const block=document.createElement('div'); block.className='unit-block';
+
+    const hdrRow=document.createElement('div');
+    hdrRow.style.cssText='display:flex;align-items:center;justify-content:space-between';
+    const lblEl=document.createElement('div'); lblEl.className='sec-lbl';
+    lblEl.textContent=`${unit.title}  ·  ${done}/${unit.lessons.length}`;
+    hdrRow.appendChild(lblEl);
+    if(done>0&&GRAMMAR_TIPS[ui+1]){
+      const tb=document.createElement('button');
+      tb.style.cssText='background:none;border:none;font-size:11px;font-weight:800;color:var(--blue);cursor:pointer;font-family:inherit';
+      tb.textContent='📖 Grammar'; tb.addEventListener('click',()=>showGrammar(ui+1));
+      hdrRow.appendChild(tb);
+    }
+
+    const hdr=document.createElement('div');
+    hdr.className='unit-hdr'+(isLocked?' locked':'');
+    hdr.style.background=isLocked?'':unit.color;
+    hdr.textContent=unit.emoji+'  '+unit.title;
+
+    const path=document.createElement('div'); path.className='lesson-path';
+    unit.lessons.forEach((lesson,li)=>{
+      const gIdx=ALL_LESSONS.findIndex(l=>l.unitIndex===ui&&l.title===lesson.title);
+      const ld=ALL_LESSONS[gIdx];
+      const wrapper=document.createElement('div');
+      wrapper.style.cssText='display:flex;flex-direction:column;align-items:center;gap:4px';
+      const node=document.createElement('button');
+      node.className='lesson-node '+ld.status; node.textContent=lesson.emoji;
+      if(ld.status!=='locked') node.addEventListener('click',()=>startLesson(gIdx));
+      const lbl2=document.createElement('div'); lbl2.className='lesson-node-lbl'; lbl2.textContent=lesson.title;
+      wrapper.appendChild(node); wrapper.appendChild(lbl2);
+      path.appendChild(wrapper);
+      if(li<unit.lessons.length-1){const ln=document.createElement('div');ln.className='path-line';path.appendChild(ln);}
+    });
+
+    block.appendChild(hdrRow); block.appendChild(hdr); block.appendChild(path);
+    wrap.appendChild(block);
+
+    // Cultural notes
+    const note=getCulturalNote(ui);
+    if(note&&done>0){
+      const tc=document.createElement('div'); tc.className='tip-card';
+      tc.style.cssText=`background:${unit.color}15;border:2px solid ${unit.color}33;border-radius:13px;padding:11px 13px;display:flex;gap:10px`;
+      tc.innerHTML=`<div style="font-size:18px;flex-shrink:0">${note.icon}</div><div><div style="font-size:11px;font-weight:900;color:${unit.color}">${note.title}</div><div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;line-height:1.5">${note.body}</div></div>`;
+      wrap.appendChild(tc);
+    }
+  });
+
+  const totalDone=ALL_LESSONS.filter(l=>l.status==='done').length;
+  document.getElementById('banner-fill').style.width=Math.round((totalDone/ALL_LESSONS.length)*100)+'%';
+  document.getElementById('banner-sub').textContent=`${UNITS.length} Units · ${ALL_LESSONS.length} Lessons · ${totalDone} complete`;
+  updateDailyRing();
+}
+
+const culturalNotes=[
+  {icon:"🦅",title:"Did you know?",body:"Albania's name in Albanian is 'Shqipëri' — Land of the Eagles. The double-headed eagle on the flag dates back to national hero Gjergj Kastrioti Skënderbeu."},
+  {icon:"🗣️",title:"Language Fun Fact",body:"Albanian is one of the oldest living languages — a unique branch of Indo-European with no close relatives. It has two dialects: Gheg (north) and Tosk (south)."},
+  {icon:"☕",title:"Coffee Culture",body:"Albanian coffee culture is central to social life. 'Të pimë një kafe' (Let's have a coffee) is an invitation to friendship. Refusing can seem rude!"},
+  {icon:"🍖",title:"Albanian Cuisine",body:"Tavë kosi (baked lamb with yoghurt) is Albania's national dish. Byrek (savoury pastry), fërgesë (peppers & cheese), and qofte (meatballs) are also beloved."},
+  {icon:"🎵",title:"Iso-Polyphony",body:"Albania's ancient multi-voice folk singing is a UNESCO Intangible Cultural Heritage. The overlapping vocal harmonies, called 'iso-polyphony', are hauntingly beautiful."},
+  {icon:"🏛️",title:"Ancient History",body:"Albania was home to the ancient Illyrians. The city of Berat is a UNESCO World Heritage Site, known as 'the city of a thousand windows'. Butrint has Greek, Roman and Byzantine ruins."},
+  {icon:"🤝",title:"Albanian Hospitality",body:"'Besa' — an Albanian code of honour meaning keeping one's word — is central to culture. Albanians are known for extraordinary hospitality; guests are treated like kings."},
+  {icon:"💃",title:"Albanian Dance",body:"The 'Valle' is a traditional Albanian circle dance performed at weddings and festivals. Each region has its own variation — a beautiful expression of community and identity."},
+  {icon:"🎨",title:"Colourful Tirana",body:"Albania's capital Tirana is famous for its vibrant painted buildings. Former mayor Edi Rama (an artist) had dull communist-era buildings painted in vivid colours in the 2000s."},
+  {icon:"🏆",title:"You're Almost Fluent!",body:"Congratulations on reaching advanced Albanian! You now have the vocabulary and grammar to hold real conversations. Keep practising — fluency is within reach. Urime! (Congratulations!)"},
+];
+function getCulturalNote(ui){return culturalNotes[ui]||null;}
+
+function showGrammar(unitNum){
+  const t=GRAMMAR_TIPS[unitNum]; if(!t) return;
+  document.getElementById('gm-title').textContent=t.title;
+  document.getElementById('gm-body').textContent=t.body;
+  openModal('grammar-modal');
+}
+
+function updateDailyRing(){
+  const today=new Date().toDateString();
+  if(S.dailyDate!==today){S.dailyXP=0;S.dailyDate=today;saveState();}
+  const pct=Math.min(1,S.dailyXP/S.dailyGoal);
+  const c=138.2;
+  document.getElementById('goal-ring-fill').style.strokeDashoffset=c-(c*pct);
+  document.getElementById('goal-pct').textContent=Math.round(pct*100)+'%';
+  document.getElementById('goal-sub').textContent=pct>=1?'🎉 Goal reached!':S.dailyXP+'/'+S.dailyGoal+' XP today';
+}
+
+function checkHeartRefill(){
+  const now=Date.now(); const rt=30*60*1000;
+  if(S.globalHearts<5){
+    const add=Math.floor((now-S.heartsLastRefill)/rt);
+    if(add>0){S.globalHearts=Math.min(5,S.globalHearts+add);S.heartsLastRefill=now;saveState();}
+  }
+  document.getElementById('global-hearts').textContent=S.globalHearts;
+}
+
+function refillHearts(){S.globalHearts=5;S.heartsLastRefill=Date.now();closeModal('hearts-modal');saveState();showToast('❤️ Hearts refilled!');document.getElementById('global-hearts').textContent=5;}
+
+// ════════════════════════════════════════════════════
+//  LESSON ENGINE
+// ════════════════════════════════════════════════════
+function startLesson(idx){
+  if(S.globalHearts<=0){openModal('hearts-modal');return;}
+  const lesson=ALL_LESSONS[idx];
+  Object.assign(S,{currentLessonIdx:idx,exIdx:0,hearts:3,correct:0,total:0,
+    waitNext:false,cardFlipped:false,retryQueue:[],inRetry:false});
+  document.getElementById('heart-val').textContent=3;
+  document.getElementById('lesson-unit-lbl').textContent=lesson.unitTitle;
+  document.getElementById('lesson-unit-lbl').style.color=lesson.unitColor;
+  document.getElementById('retry-banner').style.display='none';
+  const words=lesson.words.map(i=>VOCAB[i]).filter(Boolean);
+  S.exercises=buildLesson(words, lesson.unitIndex, lesson.hasSentences);
+  showScreen('lesson-screen');
+  document.getElementById('bottom-nav').style.display='none';
+  loadExercise();
+}
+
+function confirmClose(){if(S.exIdx===0){closeLesson();return;}openModal('close-modal');}
+function closeLesson(){
+  closeModal('close-modal');
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  document.getElementById('bottom-nav').style.display='flex';
+  showScreen('home-screen');
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+}
+
+function loadExercise(){
+  if(S.exIdx>=S.exercises.length){
+    if(S.retryQueue.length>0&&!S.inRetry){
+      S.inRetry=true;
+      S.exercises=[...S.exercises,...S.retryQueue];
+      S.retryQueue=[];
+      showToast('🔁 Retrying words you missed!');
+    } else {showWin();return;}
+  }
+
+  const ex=S.exercises[S.exIdx];
+  document.getElementById('lp-fill').style.width=(S.exIdx/S.exercises.length*100)+'%';
+  document.getElementById('feedback-bar').style.display='none';
+  document.getElementById('feedback-bar').className='';
+  S.waitNext=false; S.cardFlipped=false;
+  const btn=document.getElementById('action-btn');
+  btn.className='check'; btn.textContent='CHECK'; btn.disabled=true;
+  document.getElementById('lesson-type-lbl').textContent='';
+  document.getElementById('lesson-prompt').textContent='';
+  document.getElementById('lesson-ex').innerHTML='';
+
+  if(S.retryQueue.length>0){
+    document.getElementById('retry-banner').style.display='flex';
+    document.getElementById('retry-text').textContent=S.retryQueue.length+' word'+(S.retryQueue.length>1?'s':'')+' to retry';
+  } else { document.getElementById('retry-banner').style.display='none'; }
+
+  const tl=document.getElementById('lesson-type-lbl');
+  const pr=document.getElementById('lesson-prompt');
+  const ex2=document.getElementById('lesson-ex');
+
+  if(ex.type==='flashcard'){
+    tl.textContent='🃏 New Word';
+    pr.textContent='Study this carefully — you\'ll be tested on it shortly';
+    const card=document.createElement('div'); card.className='flashcard'; card.id='fc';
+    card.innerHTML=`<div class="fc-emoji">${ex.word.emoji}</div>
+      <div class="fc-word">${ex.word.al}</div>
+      <div class="fc-ph">[${ex.word.ph}]</div>
+      <div class="fc-trans" id="fc-tr">${ex.word.en}</div>
+      <div class="fc-hint" id="fc-hint">Tap to reveal ↓</div>`;
+    card.addEventListener('click', flipCard);
+    ex2.appendChild(card);
+    btn.textContent='GOT IT'; btn.disabled=false;
+
+  } else if(ex.type==='sentence'){
+    tl.textContent='📖 Albanian Sentence';
+    pr.textContent='Read this sentence carefully, then tap the words to understand each part';
+    const s=ex.sentence;
+    const card=document.createElement('div'); card.className='sentence-card';
+    const breakdown=s.breakdown.map(b=>`<div class="sc-breakdown-row"><span class="sc-word">${b.w}</span><span class="sc-meaning">= ${b.m}</span></div>`).join('');
+    card.innerHTML=`<div class="sc-al">${s.al}</div>
+      <div class="sc-en">${s.en}</div>
+      <button class="sc-toggle" id="sc-toggle" onclick="toggleBreakdown()">Show word breakdown ▼</button>
+      <div class="sc-breakdown" id="sc-breakdown">${breakdown}</div>`;
+    ex2.appendChild(card);
+    // Add listen button for sentence
+    const lb=document.createElement('button');
+    lb.style.cssText='align-self:center;background:var(--blue);border:none;border-radius:99px;color:white;padding:10px 20px;font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:6px';
+    lb.textContent='🔊 Hear this sentence';
+    lb.addEventListener('click',()=>speakAlbanian(s.al,null,null));
+    ex2.appendChild(lb);
+    btn.textContent='NEXT'; btn.disabled=false;
+
+  } else if(ex.type==='mcq'){
+    tl.textContent = S.inRetry&&ex._isRetry ? '🔁 Try Again!' : '❓ Translate This';
+    pr.textContent=ex.prompt;
+    const grid=document.createElement('div'); grid.className='mcq-grid';
+    ex.options.forEach(opt=>{
+      const b=document.createElement('button'); b.className='mcq-opt'; b.textContent=opt;
+      b.addEventListener('click',()=>selectOpt(b,opt,ex.correct));
+      grid.appendChild(b);
+    });
+    ex2.appendChild(grid);
+
+  } else if(ex.type==='typing'){
+    tl.textContent = S.inRetry&&ex._isRetry ? '🔁 Spell It Right This Time!' : '⌨️ Write It Out';
+    pr.textContent=ex.prompt;
+    const inp=document.createElement('input');
+    inp.type='text'; inp.id='typing-input';
+    inp.placeholder='Type in Albanian…';
+    inp.addEventListener('input',()=>{btn.disabled=inp.value.trim().length===0;});
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'&&!btn.disabled)handleAction();});
+    const note=document.createElement('div'); note.className='type-note';
+    note.textContent='Tip: e=ë, c=ç — both accepted';
+    ex2.appendChild(inp); ex2.appendChild(note);
+    setTimeout(()=>inp.focus(),80);
+
+  } else if(ex.type==='listening'){
+    tl.textContent='🔊 Listen & Choose';
+    pr.textContent=ex.prompt;
+    const area=document.createElement('div'); area.id='listen-area';
+    const lb=document.createElement('button'); lb.id='listen-btn';
+    lb.innerHTML='<div class="listen-ripple"></div><span id="listen-icon">🔊</span>';
+    lb.addEventListener('click',()=>triggerListen(ex.word.al));
+    const meta=document.createElement('div'); meta.className='listen-meta';
+    const badge=document.createElement('div'); badge.className='ai-badge'; badge.textContent='🎙 AI Voice';
+    const cantBtn=document.createElement('button'); cantBtn.className='cant-listen-btn';
+    cantBtn.textContent="Can't listen right now";
+    cantBtn.addEventListener('click',()=>{
+      document.getElementById('revealed-word').style.display='block';
+      showToast('📖 Word shown — now pick the translation');
+    });
+    meta.appendChild(badge); meta.appendChild(cantBtn);
+    const rev=document.createElement('div'); rev.className='revealed-word'; rev.id='revealed-word';
+    rev.innerHTML=`<div class="revealed-al">${ex.word.al}</div><div class="revealed-ph">[${ex.word.ph}]</div>`;
+    area.appendChild(lb); area.appendChild(meta); area.appendChild(rev);
+    const grid=document.createElement('div'); grid.className='mcq-grid';
+    ex.options.forEach(opt=>{
+      const b=document.createElement('button'); b.className='mcq-opt'; b.textContent=opt;
+      b.addEventListener('click',()=>selectOpt(b,opt,ex.correct));
+      grid.appendChild(b);
+    });
+    ex2.appendChild(area); ex2.appendChild(grid);
+    setTimeout(()=>triggerListen(ex.word.al),500);
+
+  } else if(ex.type==='arrange'){
+    tl.textContent='🔀 Arrange the Words';
+    pr.textContent=ex.prompt;
+    const wrap=document.createElement('div'); wrap.className='arrange-wrap';
+    const target=document.createElement('div'); target.className='arrange-target'; target.id='arrange-target';
+    const placeholder=document.createElement('span');
+    placeholder.style.cssText='color:var(--muted);font-size:13px;font-weight:600';
+    placeholder.textContent='Tap words below to place them here'; target.appendChild(placeholder);
+    const chipsDiv=document.createElement('div'); chipsDiv.className='arrange-chips'; chipsDiv.id='arrange-chips';
+    ex.allChips.forEach(w=>{
+      const chip=document.createElement('button'); chip.className='word-chip'; chip.textContent=w;
+      chip.dataset.word=w;
+      chip.addEventListener('click',()=>toggleChip(chip,ex));
+      chipsDiv.appendChild(chip);
+    });
+    wrap.appendChild(target); wrap.appendChild(chipsDiv);
+    ex2.appendChild(wrap);
+  }
+}
+
+let arrangedWords=[];
+function toggleChip(chip,ex){
+  if(chip.classList.contains('placed')){
+    chip.classList.remove('placed');
+    arrangedWords=arrangedWords.filter(w=>w!==chip.dataset.word||arrangedWords.splice(arrangedWords.lastIndexOf(chip.dataset.word),1));
+  } else {
+    chip.classList.add('placed');
+    arrangedWords.push(chip.dataset.word);
+  }
+  const target=document.getElementById('arrange-target');
+  if(arrangedWords.length>0){
+    const ph=target.querySelector('span');
+    if(ph) ph.remove();
+    target.innerHTML='';
+    target.classList.add('has-words');
+    arrangedWords.forEach(w=>{
+      const c=document.createElement('div');
+      c.className='word-chip placed'; c.textContent=w;
+      target.appendChild(c);
+    });
+  } else {
+    target.classList.remove('has-words');
+    target.innerHTML='<span style="color:var(--muted);font-size:13px;font-weight:600">Tap words below to place them here</span>';
+  }
+  document.getElementById('action-btn').disabled=arrangedWords.length===0;
+}
+
+function toggleBreakdown(){
+  const bd=document.getElementById('sc-breakdown');
+  const btn=document.getElementById('sc-toggle');
+  if(bd.style.display==='flex'){bd.style.display='none';btn.textContent='Show word breakdown ▼';}
+  else{bd.style.display='flex';bd.style.flexDirection='column';bd.style.gap='4px';btn.textContent='Hide breakdown ▲';}
+}
+
+function flipCard(){
+  if(S.cardFlipped) return; S.cardFlipped=true;
+  const tr=document.getElementById('fc-tr'); if(tr) tr.style.display='block';
+  const hint=document.getElementById('fc-hint'); if(hint) hint.style.display='none';
+  const fc=document.getElementById('fc'); if(fc) fc.style.borderColor='var(--correct)';
+}
+
+function triggerListen(word){
+  const b=document.getElementById('listen-btn');
+  const ic=document.getElementById('listen-icon');
+  if(!b||!ic) return;
+  b.classList.add('loading'); ic.textContent='⏳';
+  speakAlbanian(word,
+    ()=>{b.classList.remove('loading');b.classList.add('playing');ic.textContent='▶';},
+    ()=>{b.classList.remove('playing');ic.textContent='🔊';}
+  );
+}
+
+function selectOpt(btn,chosen,correct){
+  if(S.waitNext) return;
+  document.querySelectorAll('.mcq-opt').forEach(b=>{b.classList.remove('selected');b._ch=null;});
+  btn.classList.add('selected'); btn._ch=chosen; btn._co=correct;
+  document.getElementById('action-btn').disabled=false;
+}
+
+function handleAction(){
+  const ex=S.exercises[S.exIdx];
+  const btn=document.getElementById('action-btn');
+  if(S.waitNext){S.exIdx++;arrangedWords=[];loadExercise();return;}
+  if(ex.type==='flashcard'||ex.type==='sentence'){
+    S.correct++;S.total++;
+    if(ex.word) srsReview(VOCAB.indexOf(ex.word),true);
+    S.waitNext=true; btn.className='next'; btn.textContent='CONTINUE'; btn.disabled=false;
+    return;
+  }
+  S.total++;
+  let ok=false;
+  if(ex.type==='mcq'||ex.type==='listening'){
+    const sel=document.querySelector('.mcq-opt.selected'); if(!sel) return;
+    ok=sel._ch===sel._co;
+    document.querySelectorAll('.mcq-opt').forEach(b=>{
+      if(b._ch===ex.correct) b.classList.add('correct');
+      else if(b===sel&&!ok) b.classList.add('wrong');
+    });
+    if(ex.vocabIdx!=null) srsReview(ex.vocabIdx,ok);
+  } else if(ex.type==='typing'){
+    const inp=document.getElementById('typing-input');
+    const val=inp.value.trim().toLowerCase().replace(/ë/g,'e').replace(/ç/g,'c').replace(/\s+/g,' ');
+    const tgt=ex.correct.toLowerCase().replace(/ë/g,'e').replace(/ç/g,'c').replace(/\s+/g,' ');
+    ok=val===tgt; inp.classList.add(ok?'correct':'wrong'); inp.disabled=true;
+    if(ex.vocabIdx!=null) srsReview(ex.vocabIdx,ok);
+    if(!ok&&!ex._isRetry) S.retryQueue.push({...ex,_isRetry:true});
+  } else if(ex.type==='arrange'){
+    const tgt=ex.targetWords.join(' ').toLowerCase();
+    const ans=arrangedWords.join(' ').toLowerCase();
+    ok=ans===tgt;
+    document.querySelectorAll('.word-chip.placed').forEach(c=>{c.classList.add(ok?'correct-placed':'wrong-placed');});
+    if(ex.vocabIdx!=null) srsReview(ex.vocabIdx,ok);
+  }
+  if(ok){S.correct++;showFeedback(true,ex.correct);triggerHaptic('correct');}
+  else{
+    S.hearts=Math.max(0,S.hearts-1);S.globalHearts=Math.max(0,S.globalHearts-1);
+    document.getElementById('heart-val').textContent=S.hearts;
+    document.getElementById('global-hearts').textContent=S.globalHearts;
+    showFeedback(false,ex.correct);triggerHaptic('wrong');
+    if(S.hearts===0) setTimeout(()=>openModal('hearts-modal'),1200);
+  }
+  S.waitNext=true; btn.className='next'; btn.textContent='CONTINUE'; btn.disabled=false;
+}
+
+function showFeedback(ok,ans){
+  const bar=document.getElementById('feedback-bar');
+  bar.style.display='flex'; bar.className=ok?'correct':'wrong';
+  document.getElementById('fb-icon').textContent=ok?'✅':'❌';
+  const t=document.getElementById('fb-title');
+  t.textContent=ok?['Excellent!','Shumë mirë!','Perfect!','Brilliant!','Fantastic!'][Math.floor(Math.random()*5)]:'Not quite!';
+  t.className=ok?'correct':'wrong';
+  document.getElementById('fb-ans').textContent=ok?'Keep it up!':'Correct: '+ans;
+}
+
+// ════════════════════════════════════════════════════
+//  WIN
+// ════════════════════════════════════════════════════
+function showWin(){
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  const acc=S.total>0?Math.round((S.correct/S.total)*100):100;
+  const xp=10+Math.floor(acc/10)*2;
+  S.xp+=xp; S.dailyXP+=xp; S.streak=Math.max(S.streak,1);
+  S.lessonsCompleted++; S.lastActiveDate=new Date().toDateString();
+  if(S.lessonsCompleted%7===0){S.streakFreezeAvail++;showToast('🧊 Streak Freeze earned!');}
+
+  const lesson=ALL_LESSONS[S.currentLessonIdx];
+  if(lesson.status==='current'){
+    lesson.status='done';
+    const next=ALL_LESSONS[S.currentLessonIdx+1];
+    if(next&&next.status==='locked') next.status='current';
+  }
+
+  document.getElementById('win-xp').textContent='+'+xp;
+  document.getElementById('win-acc').textContent=acc+'%';
+  document.getElementById('win-streak').textContent=S.streak;
+  document.getElementById('win-title').textContent='Lesson Complete!';
+  document.getElementById('win-sub').textContent=acc===100?'Perfect score! Shumë mirë!':'Shumë mirë! Very well done!';
+  document.getElementById('xp-val').textContent=S.xp;
+  document.getElementById('streak-val').textContent=S.streak;
+  document.getElementById('win-bonus-btn').style.display='block';
+
+  S.bonusWords=ALL_LESSONS[S.currentLessonIdx].words.map(i=>VOCAB[i]).filter(Boolean);
+
+  document.getElementById('lesson-screen').classList.remove('active');
+  const ws=document.getElementById('win-screen');
+  ws.classList.add('active'); ws.style.display='flex';
+  document.getElementById('bottom-nav').style.display='none';
+  saveState(); launchConfetti();
+}
+
+function finishLesson(){
+  const ws=document.getElementById('win-screen');
+  ws.classList.remove('active'); ws.style.display='none';
+  document.getElementById('bottom-nav').style.display='flex';
+  showScreen('home-screen');
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+}
+
+// ════════════════════════════════════════════════════
+//  BONUS ROUND
+// ════════════════════════════════════════════════════
+function startBonusRound(){
+  document.getElementById('win-screen').classList.remove('active');
+  document.getElementById('win-screen').style.display='none';
+  S.bonusScore=0;
+  document.getElementById('bonus-score-val').textContent='0';
+  document.getElementById('bonus-screen').classList.add('active');
+  document.getElementById('bottom-nav').style.display='none';
+  const fill=document.getElementById('bonus-timer-fill');
+  fill.style.transition='none'; fill.style.width='100%';
+  setTimeout(()=>{fill.style.transition='width 30s linear';fill.style.width='0%';},50);
+  S.bonusTimer=setTimeout(endBonusRound,30000);
+  loadBonusQ();
+}
+
+function loadBonusQ(){
+  const w=S.bonusWords[Math.floor(Math.random()*S.bonusWords.length)];
+  document.getElementById('bonus-word').textContent=w.emoji+' '+w.al;
+  const dist=VOCAB.filter(v=>v!==w).sort(()=>Math.random()-.5).slice(0,3).map(v=>v.en);
+  const opts=[...dist,w.en].sort(()=>Math.random()-.5);
+  const od=document.getElementById('bonus-options'); od.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button'); b.className='bonus-opt'; b.textContent=o;
+    b.addEventListener('click',()=>{
+      b.classList.add(o===w.en?'correct':'wrong');
+      if(o===w.en){S.bonusScore++;document.getElementById('bonus-score-val').textContent=S.bonusScore;triggerHaptic('correct');}
+      else triggerHaptic('wrong');
+      setTimeout(loadBonusQ,350);
+    });
+    od.appendChild(b);
+  });
+}
+
+function endBonusRound(){
+  clearTimeout(S.bonusTimer);
+  document.getElementById('bonus-screen').classList.remove('active');
+  const bonus=S.bonusScore*3; S.xp+=bonus; S.dailyXP+=bonus;
+  document.getElementById('xp-val').textContent=S.xp;
+  document.getElementById('win-title').textContent='Speed Round Done!';
+  document.getElementById('win-sub').textContent='Score: '+S.bonusScore+' · +'+bonus+' bonus XP!';
+  document.getElementById('win-bonus-btn').style.display='none';
+  const ws=document.getElementById('win-screen');
+  ws.classList.add('active'); ws.style.display='flex';
+  saveState();
+}
+
+// ════════════════════════════════════════════════════
+//  VOCAB SCREEN
+// ════════════════════════════════════════════════════
+function renderVocab(){
+  const sc=document.getElementById('vocab-screen'); sc.innerHTML='';
+  const s=document.createElement('input'); s.className='vocab-search'; s.placeholder='🔍 Search Albanian or English…';
+  s.addEventListener('input',()=>renderVocabList(s.value.trim().toLowerCase()));
+  sc.appendChild(s);
+  const list=document.createElement('div'); list.id='vocab-list';
+  list.style.cssText='display:flex;flex-direction:column;gap:8px';
+  sc.appendChild(list); renderVocabList('');
+}
+
+function renderVocabList(q){
+  const list=document.getElementById('vocab-list'); list.innerHTML='';
+  UNITS.forEach((unit,ui)=>{
+    const words=VOCAB.filter(v=>v.u===ui+1&&(!q||v.al.toLowerCase().includes(q)||v.en.toLowerCase().includes(q)));
+    if(!words.length) return;
+    const lbl=document.createElement('div'); lbl.className='vocab-unit-lbl';
+    lbl.style.color=unit.color; lbl.textContent=unit.title+' ('+words.length+' words)';
+    list.appendChild(lbl);
+    words.forEach(v=>{
+      const idx=VOCAB.indexOf(v); const badge=srsBadge(idx);
+      const card=document.createElement('div');
+      card.className='vocab-card'+(badge.label==='Due'?' srs-due':'');
+      card.innerHTML=`<div class="vocab-emoji">${v.emoji}</div>
+        <div style="flex:1"><div class="vocab-al">${v.al}</div>
+        <div class="vocab-en">${v.en}</div>
+        <div class="vocab-ph">[${v.ph}]</div></div>
+        <span class="vocab-srs ${badge.cls}">${badge.label}</span>`;
+      card.addEventListener('click',()=>{speakAlbanian(v.al,null,null);showToast('🔊 '+v.al+' = '+v.en);});
+      list.appendChild(card);
+    });
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  PROFILE & ACHIEVEMENTS
+// ════════════════════════════════════════════════════
+const ACHS=[
+  {id:'first',icon:'🔥',name:'First Flame',desc:'Complete your first lesson',check:()=>S.lessonsCompleted>=1},
+  {id:'l10',icon:'📚',name:'Dedicated Learner',desc:'Complete 10 lessons',check:()=>S.lessonsCompleted>=10},
+  {id:'l25',icon:'🎓',name:'Committed Student',desc:'Complete 25 lessons',check:()=>S.lessonsCompleted>=25},
+  {id:'l50',icon:'🏆',name:'All Lessons Done',desc:'Complete all 50 lessons',check:()=>S.lessonsCompleted>=50},
+  {id:'streak7',icon:'🔥',name:'Week Streak',desc:'7-day streak',check:()=>S.streak>=7},
+  {id:'streak30',icon:'🌟',name:'Monthly Master',desc:'30-day streak',check:()=>S.streak>=30},
+  {id:'words50',icon:'📖',name:'Word Collector',desc:'Learn 50 words',check:()=>Object.values(SRS).filter(s=>s.reviews>0).length>=50},
+  {id:'words100',icon:'🗣️',name:'Vocabulary Champion',desc:'Learn 100+ words',check:()=>Object.values(SRS).filter(s=>s.reviews>0).length>=100},
+  {id:'allunits',icon:'🌍',name:'Unit Champion',desc:'Complete all 10 units',check:()=>ALL_LESSONS.every(l=>l.status==='done')},
+  {id:'speed15',icon:'⚡',name:'Speed Demon',desc:'Score 15+ in Speed Round',check:()=>S.bonusScore>=15},
+  {id:'xp1000',icon:'💎',name:'XP Milestone',desc:'Earn 1000 XP',check:()=>S.xp>=1000},
+  {id:'fluent',icon:'🇦🇱',name:'Albanian Speaker',desc:'Complete Unit 10',check:()=>ALL_LESSONS.filter(l=>l.unitIndex===9).every(l=>l.status==='done')},
+];
+
+function updateProfile(){
+  document.getElementById('p-xp').textContent=S.xp;
+  document.getElementById('p-streak').textContent=S.streak;
+  document.getElementById('p-lessons').textContent=S.lessonsCompleted;
+  document.getElementById('p-words').textContent=Object.values(SRS).filter(s=>s.reviews>0).length;
+  document.getElementById('xp-val').textContent=S.xp;
+  document.getElementById('streak-val').textContent=S.streak;
+  const lvl=Math.floor(S.xp/300)+1;
+  const titles=['Beginner','Elementary','Pre-Intermediate','Intermediate','Upper-Intermediate','Advanced','Fluent','Native-level'];
+  document.getElementById('profile-lvl').textContent='⭐ Level '+lvl+' · '+((titles[Math.min(lvl-1,7)])||'Master');
+  const al=document.getElementById('achievements-list'); al.innerHTML='';
+  ACHS.forEach(a=>{
+    const u=a.check();
+    const item=document.createElement('div'); item.className='ach-item'; item.style.opacity=u?'1':'0.38';
+    item.innerHTML=`<div class="ach-icon">${a.icon}</div><div><div class="ach-name">${a.name}${!u?' 🔒':' ✓'}</div><div class="ach-desc">${a.desc}</div></div>`;
+    al.appendChild(item);
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════
+function triggerHaptic(t){if(!navigator.vibrate)return;navigator.vibrate(t==='correct'?40:[60,30,60]);}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+let _tt;
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2800);
+}
+function launchConfetti(){
+  const colors=['#3DAA47','#1FAEE8','#FF9600','#9B59D0','#E91E8C','#FFD600','#00BFA5'];
+  for(let i=0;i<70;i++){
+    const el=document.createElement('div'); el.className='cf';
+    el.style.cssText=`left:${Math.random()*100}vw;top:0;background:${colors[i%colors.length]};animation-delay:${Math.random()*1.2}s;animation-duration:${1.8+Math.random()*1.2}s;border-radius:${Math.random()>.5?'50%':'2px'}`;
+    document.body.appendChild(el); setTimeout(()=>el.remove(),3700);
+  }
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+if('speechSynthesis' in window){
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+}
+
+const saved=loadState();
+if(saved&&S.onboardDone){
+  document.getElementById('onboard-screen').classList.remove('active');
+  document.getElementById('home-screen').classList.add('active');
+  document.getElementById('bottom-nav').style.display='flex';
+  document.querySelectorAll('.nav-btn')[0].classList.add('active');
+  renderHome(); checkHeartRefill();
+}
+</script>
+</body>
+</html>
